@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GoodDeal? — Is this a good deal?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#08080B;color:#F0F0F6;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh}
+.hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28}
+.logo{font-size:18px;font-weight:900;display:flex;align-items:center;gap:7px}
+.hbtn{background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.body{flex:1;padding-bottom:48px;overflow-y:auto}
+.hero{padding:28px 20px 0;text-align:center}
+.tag{display:inline-block;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:34px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:10px}
+.sub{font-size:14px;color:#52526E;line-height:1.5}
+.form{margin:22px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
+.lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;display:block;margin-top:12px}
+input{width:100%;background:#08080B;border:1px solid #1C1C28;border-radius:10px;padding:12px 14px;color:#F0F0F6;font-size:15px;font-family:inherit;outline:none;margin-top:5px}
+input:focus{border-color:#6366F1}
+input::placeholder{color:#2A2A42}
+.gobtn{width:100%;border:none;border-radius:12px;padding:15px 0;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px}
+.gobtn.on{background:#6366F1;color:#fff}
+.gobtn.off{background:#14143A;color:#52526E;cursor:default}
+.exwrap{margin:18px 16px 0}
+.exlbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.exchip{background:#0F0F15;border:1px solid #1C1C28;border-radius:12px;padding:10px 12px;cursor:pointer}
+.exname{font-size:13px;font-weight:700;margin-bottom:2px}
+.exmeta{font-size:11px;color:#52526E}
+.lwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:0 24px}
+.spin{width:44px;height:44px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.litem{font-size:22px;font-weight:900;text-align:center}
+.lstep{font-size:13px;color:#52526E;text-align:center}
+.banner{margin:18px 16px 0;border-radius:18px;padding:22px 18px 18px}
+.scorerow{text-align:center;font-size:12px;font-weight:700;margin-bottom:8px}
+.bige{font-size:48px;display:block;text-align:center;margin-bottom:8px}
+.vlabel{font-size:26px;font-weight:900;text-align:center;margin-bottom:4px;letter-spacing:-0.8px}
+.vitem{font-size:13px;color:#52526E;text-align:center}
+.barw{margin:14px 0 0;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+.barf{height:100%;border-radius:999px}
+.savemsg{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#22C55E}
+.sec{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:15px 16px}
+.sect{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.secp{font-size:15px;line-height:1.55;margin:0}
+.ptable{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;overflow:hidden}
+.phdr{padding:10px 16px;background:#12122A;display:flex;justify-content:space-between;align-items:center}
+.phdrt{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:#22C55E;font-weight:600}
+.livedot{width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
+.prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center}
+.prow.user{background:#1A0808}
+.prow.lowest{background:#071A0A}
+.pstore{font-size:14px;font-weight:600}
+.pstore.red{color:#F87171}
+.psub{font-size:11px;margin-top:2px}
+.psub.red{color:#F87171}
+.psub.green{color:#22C55E}
+.pright{display:flex;align-items:center;gap:8px}
+.price{font-size:15px;font-weight:800}
+.price.red{color:#F87171}
+.price.green{color:#22C55E}
+.savebadge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
+.wob{margin:10px 16px 0;border-radius:14px;padding:15px 16px;display:flex;align-items:flex-start;gap:12px}
+.wob.wait{background:#120E00;border:1px solid #854D0E}
+.wob.buy{background:#021208;border:1px solid #14532D}
+.wobicon{font-size:26px;flex-shrink:0}
+.wobtitle{font-size:13px;font-weight:800;margin-bottom:4px}
+.wobtitle.wait{color:#FACC15}
+.wobtitle.buy{color:#22C55E}
+.wobtext{font-size:14px;line-height:1.5}
+.actrow{display:flex;gap:10px;margin:16px 16px 0}
+.newbtn{flex:1;background:#6366F1;border:none;color:#fff;border-radius:12px;padding:14px 0;font-size:15px;font-weight:800;cursor:pointer}
+.shrbtn{flex:1;background:#0F0F15;border:1px solid #1C1C28;color:#F0F0F6;border-radius:12px;padding:14px 0;font-size:15px;font-weight:700;cursor:pointer}
+.hcard{margin:8px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px}
+.hinfo{flex:1}
+.hname{font-size:14px;font-weight:700;margin-bottom:2px}
+.hmeta{font-size:12px;color:#52526E}
+.hverd{font-size:12px;font-weight:700;white-space:nowrap}
+.empty{text-align:center;color:#52526E;margin-top:60px;font-size:15px;line-height:1.7}
+.pagesec{padding:20px 18px 12px}
+.pagetitle{font-size:22px;font-weight:900}
+.pagesub{font-size:13px;color:#52526E;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const SERVER="https://gooddeal-server-production.up.railway.app";
+const EXAMPLES=[
+  {label:"AirPods Pro 2nd Gen",price:"$189",store:"Best Buy"},
+  {label:"Ninja AF101 Air Fryer",price:"$79",store:"Walmart"},
+  {label:"Nike Air Force 1",price:"$110",store:"Foot Locker"},
+  {label:'Samsung 65" 4K TV',price:"$797",store:"Costco"},
+];
+const VERDICT={
+  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D",bar:93},
+  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534",bar:72},
+  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E",bar:46},
+  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B",bar:15},
+};
+let state={screen:"home",item:"",price:"",store:"",loading:false,loadStep:"",result:null,history:[]};
+
+function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad"}
+function pick(text,label){if(!text)return null;const m=text.match(new RegExp(label+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
+function setState(u){Object.assign(state,u);render()}
+
+async function analyze(){
+  if(!state.item||!state.price)return;
+  setState({loading:true,screen:"result",result:null,loadStep:"Searching live prices across stores..."});
+  let priceList=[],lowestPrice=null,lowestSource=null,priceDiff=null;
+  try{
+    const res=await fetch(`${SERVER}/prices?q=${encodeURIComponent(state.item)}`);
+    const data=await res.json();
+    if(Array.isArray(data)&&data.length>0){
+      priceList=data.filter(r=>r.price).slice(0,8).map(r=>({
+        price:r.price,source:r.source||"Unknown",
+        priceNum:parseFloat(String(r.price).replace(/[^0-9.]/g,""))||999999
+      })).sort((a,b)=>a.priceNum-b.priceNum);
+      if(priceList.length>0){
+        lowestPrice=priceList[0].price;lowestSource=priceList[0].source;
+        const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
+        if(uN>priceList[0].priceNum)priceDiff=((uN-priceList[0].priceNum)/uN*100).toFixed(0);
+      }
+    }
+  }catch(e){}
+  setState({loadStep:"Running AI analysis..."});
+  const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
+  const ctx=priceList.length>0?`LIVE PRICES:\n${priceList.slice(0,6).map(r=>`- ${r.source}: ${r.price}`).join("\n")}\nLowest: ${lowestPrice} at ${lowestSource}${priceDiff?`\nOverpaying by: ${priceDiff}%`:""}`:"No live data.";
+  const prompt=`You are a brutally honest shopping advisor.\n\nITEM: ${state.item}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY:\n\nSCORE: [0-100]\n\nONE LINE: [punchy honest sentence]\n\nAMAZON PRICE: [price or estimate]\n\nCHEAPEST RIGHT NOW: [cheapest store + price]\n\nPRICE HISTORY: [high/low/average + sale patterns]\n\nWAIT OR BUY: [BUY NOW or WAIT + reason]\n\nBOTTOM LINE: [2 sentences]`;
+  try{
+    const r=await fetch(`${SERVER}/analyze`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
+    const d=await r.json();const text=d.text||"";
+    const sm=text.match(/SCORE:\s*(\d+)/i);
+    const score=sm?Math.min(100,Math.max(0,parseInt(sm[1]))):50;
+    const vk=scoreToVerdict(score);
+    const nr={item:state.item,price:state.price,store:state.store,verdictKey:vk,score,text,priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+    state.history=[nr,...state.history.slice(0,9)];
+    setState({loading:false,result:nr});
+  }catch(e){
+    const lN=priceList[0]?.priceNum||uN;
+    const as=Math.max(0,Math.min(100,Math.round(100-((uN-lN)/Math.max(uN,1))*150)));
+    const nr={item:state.item,price:state.price,store:state.store,verdictKey:scoreToVerdict(as),score:as,text:"",priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+    state.history=[nr,...state.history.slice(0,9)];
+    setState({loading:false,result:nr});
+  }
+}
+
+function renderResult(){
+  const r=state.result;if(!r)return"";
+  const v=r.verdictKey;const vd=VERDICT[v];const sc=r.score;const tx=r.text;
+  const oneLine=pick(tx,"ONE LINE");const hist=pick(tx,"PRICE HISTORY");
+  const wob=pick(tx,"WAIT OR BUY");const bottom=pick(tx,"BOTTOM LINE");
+  const isWait=wob?.toLowerCase().startsWith("wait");
+  const pl=r.priceList||[];const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
+  if(state.loading)return`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`;
+  let priceRows="";
+  if(pl.length>0){
+    const ur=`<div class="prow user"><div><div class="pstore red">📍 ${r.store||"Your Store"}</div><div class="psub red">Where you're standing</div></div><span class="price red">${r.price}</span></div>`;
+    const rows=pl.slice(0,6).map((p,i)=>{
+      const il=i===0;const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
+      return`<div class="prow ${il?"lowest":""}"><div><div class="pstore">${il?"🏆 ":""}${p.source}</div>${il?'<div class="psub green">Cheapest found</div>':""}</div><div class="pright">${sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"green":""}">${p.price}</span></div></div>`;
+    }).join("");
+    priceRows=`<div class="ptable"><div class="phdr"><span class="phdrt">Live Prices Across Stores</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
+  }
+  return`
+    <div class="banner" style="background:${vd.bg};border:1px solid ${vd.border}">
+      <div class="scorerow" style="color:${vd.color}">Deal Score: ${sc} / 100</div>
+      <span class="bige">${vd.emoji}</span>
+      <div class="vlabel" style="color:${vd.color}">${vd.label}</div>
+      <div class="vitem">${r.item} · ${r.price}${r.store?` at ${r.store}`:""}</div>
+      <div class="barw"><div class="barf" style="width:${sc}%;background:${vd.color}"></div></div>
+      ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="savemsg">💰 You could save ${r.priceDiff}% buying elsewhere</div>`:""}
+    </div>
+    ${oneLine?`<div class="sec"><div class="sect">The Verdict</div><p class="secp" style="font-style:italic;color:#C0C0E0;font-size:16px">"${oneLine}"</p></div>`:""}
+    ${priceRows}
+    ${hist?`<div class="sec"><div class="sect">📈 Price History</div><p class="secp">${hist}</p></div>`:""}
+    ${wob?`<div class="wob ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait for a better price":"Buy it now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
+    ${bottom?`<div class="sec" style="border:1px solid ${vd.border}"><div class="sect">Bottom Line</div><p class="secp">${bottom}</p></div>`:""}
+    <div class="actrow"><button class="newbtn" onclick="doReset()">Check Another</button><button class="shrbtn" onclick="doShare()">📋 Share</button></div>`;
+}
+
+function render(){
+  const hc=state.history.length;
+  const hdrR=state.screen==="home"?`<button class="hbtn" onclick="setState({screen:'history'})">History${hc>0?` (${hc})`:""}</button>`:`<button class="hbtn" onclick="doReset()">← New Check</button>`;
+  let body="";
+  if(state.screen==="home"){
+    body=`<div class="hero"><span class="tag">🟢 Live Prices · Real Stores</span><h1>Is this a<br>good deal?</h1><p class="sub">Real prices from Amazon, Walmart, Target and more — checked in seconds.</p></div>
+    <div class="form">
+      <label class="lbl" style="margin-top:0">What is it?</label>
+      <input id="ii" type="text" placeholder='AirPods Pro, Ninja Air Fryer...' value="${state.item}" oninput="state.item=this.value;upd()">
+      <label class="lbl">Price you see</label>
+      <input id="ip" type="text" placeholder="$189" value="${state.price}" oninput="state.price=this.value;upd()">
+      <label class="lbl">Store (optional)</label>
+      <input id="is" type="text" placeholder="Best Buy, Walmart, Target..." value="${state.store}" oninput="state.store=this.value">
+      <button id="gb" class="${state.item&&state.price?"gobtn on":"gobtn off"}" onclick="if(state.item&&state.price)analyze()">${state.item&&state.price?"Check the deal →":"Enter item + price above"}</button>
+    </div>
+    <div class="exwrap"><div class="exlbl">Try an example</div><div class="exgrid">
+      ${EXAMPLES.map((ex,i)=>`<div class="exchip" onclick="fillEx(${i})"><div class="exname">${ex.label}</div><div class="exmeta">${ex.price} · ${ex.store}</div></div>`).join("")}
+    </div></div>`;
+  } else if(state.screen==="result"){
+    body=state.loading?`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`:renderResult();
+  } else if(state.screen==="history"){
+    body=`<div class="pagesec"><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`).join(""));
+  }
+  document.getElementById("app").innerHTML=`<div class="hdr"><div class="logo"><span>🔍</span><span>GoodDeal?</span></div>${hdrR}</div><div class="body">${body}</div>`;
+}
+
+function fillEx(i){const e=EXAMPLES[i];state.item=e.label;state.price=e.price;state.store=e.store;render()}
+function doReset(){setState({screen:"home",result:null})}
+function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;setState({screen:"result",result:h})}
+function upd(){const b=document.getElementById("gb");if(!b)return;const on=state.item&&state.price;b.className=on?"gobtn on":"gobtn off";b.textContent=on?"Check the deal →":"Enter item + price above"}
+function doShare(){const r=state.result;if(!r)return;const vd=VERDICT[r.verdictKey];const ol=pick(r.text,"ONE LINE");const ch=r.priceList?.[0]?`\nCheapest: ${r.priceList[0].source} at ${r.priceList[0].price}`:"";const t=`${vd.emoji} ${r.item} for ${r.price} — ${vd.label} (${r.score}/100)${ch}\n\n"${ol||""}"\n\nChecked with GoodDeal?`;navigator.clipboard?.writeText(t).then(()=>alert("Copied!")).catch(()=>alert(t))}
+render();
+</script>
+</body>
+</html>
