@@ -7,24 +7,44 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#08080B;color:#F0F0F6;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
-#app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh}
-.hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28}
+#app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh;position:relative}
+.hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28;position:sticky;top:0;background:#08080B;z-index:50}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.menubtn{background:none;border:none;color:#F0F0F6;font-size:22px;cursor:pointer;padding:4px;line-height:1}
 .logo{font-size:18px;font-weight:900;display:flex;align-items:center;gap:7px}
 .hbtn{background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:none}
+.overlay.open{display:block}
+.sidebar{position:fixed;top:0;left:-300px;width:300px;height:100vh;background:#0F0F15;border-right:1px solid #1C1C28;z-index:101;transition:left 0.25s ease;overflow-y:auto;padding-bottom:60px}
+.sidebar.open{left:0}
+.sidebar-hdr{padding:20px 18px 16px;border-bottom:1px solid #1C1C28;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#0F0F15}
+.sidebar-title{font-size:17px;font-weight:800}
+.closebtn{background:none;border:none;color:#52526E;font-size:24px;cursor:pointer}
+.cat-section-label{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;padding:16px 18px 6px}
+.cat-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;transition:background 0.15s}
+.cat-item:active,.cat-item.active{background:#1A1A2E}
+.cat-item.active{border-right:3px solid #6366F1}
+.cat-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.cat-name{font-size:14px;font-weight:600}
+.cat-name.active{color:#6366F1}
 .body{flex:1;padding-bottom:48px;overflow-y:auto}
-.hero{padding:28px 20px 0;text-align:center}
-.tag{display:inline-block;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
-h1{font-size:34px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:10px}
-.sub{font-size:14px;color:#52526E;line-height:1.5}
-.form{margin:22px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
+.hero{padding:24px 20px 0;text-align:center}
+.cat-badge{display:inline-flex;align-items:center;gap:6px;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;margin-bottom:14px}
+h1{font-size:32px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:8px}
+.sub{font-size:13px;color:#52526E;line-height:1.5}
+.form{margin:18px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
 .lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;display:block;margin-top:12px}
+.lbl:first-child{margin-top:0}
 input{width:100%;background:#08080B;border:1px solid #1C1C28;border-radius:10px;padding:12px 14px;color:#F0F0F6;font-size:15px;font-family:inherit;outline:none;margin-top:5px}
 input:focus{border-color:#6366F1}
 input::placeholder{color:#2A2A42}
 .gobtn{width:100%;border:none;border-radius:12px;padding:15px 0;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px}
 .gobtn.on{background:#6366F1;color:#fff}
 .gobtn.off{background:#14143A;color:#52526E;cursor:default}
-.exwrap{margin:18px 16px 0}
+.tips{margin:12px 16px 0;display:flex;gap:8px;flex-wrap:wrap}
+.tip{background:#0F0F15;border:1px solid #1C1C28;border-radius:999px;padding:5px 12px;font-size:11px;color:#8A8AAA;cursor:pointer}
+.tip:active{background:#1A1A2E;color:#F0F0F6}
+.exwrap{margin:14px 16px 0}
 .exlbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
 .exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .exchip{background:#0F0F15;border:1px solid #1C1C28;border-radius:12px;padding:10px 12px;cursor:pointer}
@@ -33,7 +53,7 @@ input::placeholder{color:#2A2A42}
 .lwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:0 24px}
 .spin{width:44px;height:44px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.litem{font-size:22px;font-weight:900;text-align:center}
+.litem{font-size:20px;font-weight:900;text-align:center}
 .lstep{font-size:13px;color:#52526E;text-align:center}
 .banner{margin:18px 16px 0;border-radius:18px;padding:22px 18px 18px}
 .scorerow{text-align:center;font-size:12px;font-weight:700;margin-bottom:8px}
@@ -43,6 +63,7 @@ input::placeholder{color:#2A2A42}
 .barw{margin:14px 0 0;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
 .barf{height:100%;border-radius:999px}
 .savemsg{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#22C55E}
+.warn{text-align:center;margin-top:10px;font-size:12px;font-weight:700;color:#F87171;line-height:1.4}
 .sec{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:15px 16px}
 .sect{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
 .secp{font-size:15px;line-height:1.55;margin:0}
@@ -58,7 +79,7 @@ input::placeholder{color:#2A2A42}
 .pstore{font-size:14px;font-weight:600}
 .pstore.user{color:#F87171}
 .psub{font-size:11px;margin-top:2px}
-.psub.user{color:#F87171}
+.psub.red{color:#F87171}
 .psub.low{color:#22C55E}
 .psub.link{color:#6366F1}
 .pright{display:flex;align-items:center;gap:8px}
@@ -66,6 +87,7 @@ input::placeholder{color:#2A2A42}
 .price.user{color:#F87171}
 .price.lowest{color:#22C55E}
 .savebadge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
+.fakebadge{background:#3A0A0A;color:#F87171;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
 .wob{margin:10px 16px 0;border-radius:14px;padding:15px 16px;display:flex;align-items:flex-start;gap:12px}
 .wob.wait{background:#120E00;border:1px solid #854D0E}
 .wob.buy{background:#021208;border:1px solid #14532D}
@@ -90,81 +112,205 @@ input::placeholder{color:#2A2A42}
 </head>
 <body>
 <div id="app"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <span class="sidebar-title">🔍 Categories</span>
+    <button class="closebtn" onclick="closeSidebar()">×</button>
+  </div>
+  <div id="cat-list"></div>
+</div>
 <script>
 const SERVER="https://gooddeal-server-production.up.railway.app";
-const EXAMPLES=[
-  {label:"AirPods Pro 2nd Gen",price:"$189",store:"Best Buy"},
-  {label:"Ninja AF101 Air Fryer",price:"$79",store:"Walmart"},
-  {label:"Nike Air Force 1",price:"$110",store:"Foot Locker"},
-  {label:'Samsung 65" 4K TV',price:"$797",store:"Costco"},
+
+const CATEGORIES=[
+  {section:"Popular"},
+  {id:"all",icon:"🔍",name:"Everything",tips:[],examples:[{label:"AirPods Pro 2nd Gen",price:"$189",store:"Best Buy"},{label:"Nike Air Force 1",price:"$110",store:"Foot Locker"},{label:"Instant Pot",price:"$89",store:"Target"},{label:"Levi's 501 Jeans",price:"$79",store:"Macy's"}]},
+  {section:"Fashion & Style"},
+  {id:"sneakers",icon:"👟",name:"Shoes & Sneakers",tips:["Nike","Jordan","Yeezy","New Balance","Adidas","Converse","Vans","Puma"],examples:[{label:"Nike Air Force 1",price:"$110",store:"Foot Locker"},{label:"Jordan 1 Retro High",price:"$180",store:"Nike"},{label:"Yeezy Boost 350",price:"$230",store:"Adidas"},{label:"New Balance 990",price:"$185",store:"New Balance"}]},
+  {id:"clothing",icon:"👕",name:"Clothing",tips:["T-Shirt","Jeans","Hoodie","Jacket","Dress","Shorts","Leggings","Coat"],examples:[{label:"Levi's 501 Jeans",price:"$79",store:"Macy's"},{label:"Nike Hoodie",price:"$65",store:"Nike"},{label:"North Face Jacket",price:"$199",store:"REI"},{label:"Zara Dress",price:"$49",store:"Zara"}]},
+  {id:"hats",icon:"🧢",name:"Hats & Headwear",tips:["New Era","Nike","Gucci","Louis Vuitton","Snapback","Fitted","Beanie"],examples:[{label:"New Era 59Fifty",price:"$45",store:"Lids"},{label:"Nike Dri-FIT Cap",price:"$28",store:"Nike"},{label:"Carhartt Beanie",price:"$22",store:"Amazon"},{label:"Stussy Bucket Hat",price:"$55",store:"Stussy"}]},
+  {id:"jewelry",icon:"💍",name:"Jewelry",tips:["Necklace","Earrings","Bracelet","Ring","Watch","Anklet","Pendant"],examples:[{label:"14K Gold Necklace",price:"$299",store:"Kay Jewelers"},{label:"Diamond Stud Earrings",price:"$499",store:"Zales"},{label:"Tennis Bracelet",price:"$189",store:"Macy's"},{label:"Men's Watch",price:"$250",store:"Fossil"}]},
+  {id:"bags",icon:"👜",name:"Bags & Handbags",tips:["Louis Vuitton","Gucci","Coach","Kate Spade","Michael Kors","Tote","Backpack"],examples:[{label:"Coach Shoulder Bag",price:"$295",store:"Coach"},{label:"Louis Vuitton Neverfull",price:"$1,500",store:"LV"},{label:"Nike Backpack",price:"$45",store:"Nike"},{label:"Kate Spade Purse",price:"$198",store:"Nordstrom"}]},
+  {id:"sunglasses",icon:"🕶️",name:"Sunglasses & Eyewear",tips:["Ray-Ban","Oakley","Gucci","Prada","Polarized","Aviator"],examples:[{label:"Ray-Ban Aviator",price:"$163",store:"Sunglass Hut"},{label:"Oakley Holbrook",price:"$126",store:"Oakley"},{label:"Gucci Sunglasses",price:"$295",store:"Nordstrom"},{label:"Quay Sunglasses",price:"$65",store:"Quay"}]},
+  {id:"watches",icon:"⌚",name:"Watches",tips:["Rolex","Apple Watch","Casio","Fossil","Seiko","TAG Heuer"],examples:[{label:"Apple Watch Series 9",price:"$399",store:"Apple"},{label:"Casio G-Shock",price:"$99",store:"Amazon"},{label:"Fossil Gen 6",price:"$249",store:"Fossil"},{label:"Seiko Automatic",price:"$325",store:"Seiko"}]},
+  {section:"Electronics & Tech"},
+  {id:"electronics",icon:"📱",name:"Phones & Tablets",tips:["iPhone","Samsung","iPad","Galaxy","Pixel","OnePlus"],examples:[{label:"iPhone 15 Pro",price:"$999",store:"Apple"},{label:"Samsung Galaxy S24",price:"$799",store:"Best Buy"},{label:"iPad Air",price:"$599",store:"Apple"},{label:"Google Pixel 8",price:"$699",store:"Google"}]},
+  {id:"computers",icon:"💻",name:"Computers & Laptops",tips:["MacBook","Dell","HP","Lenovo","ASUS","Chromebook","Gaming Laptop"],examples:[{label:"MacBook Air M2",price:"$1,099",store:"Apple"},{label:"Dell XPS 15",price:"$1,299",store:"Dell"},{label:"HP Spectre x360",price:"$1,199",store:"Best Buy"},{label:"ASUS ROG Laptop",price:"$1,499",store:"Newegg"}]},
+  {id:"audio",icon:"🎧",name:"Audio & Headphones",tips:["AirPods","Sony","Bose","JBL","Beats","Sennheiser"],examples:[{label:"AirPods Pro 2nd Gen",price:"$189",store:"Best Buy"},{label:"Sony WH-1000XM5",price:"$279",store:"Sony"},{label:"Bose QC45",price:"$279",store:"Bose"},{label:"JBL Flip 6",price:"$129",store:"Amazon"}]},
+  {id:"tv",icon:"📺",name:"TVs & Displays",tips:["Samsung","LG","Sony","TCL","Hisense","OLED","4K"],examples:[{label:'Samsung 65" 4K TV',price:"$797",store:"Costco"},{label:'LG OLED 55"',price:"$1,299",store:"Best Buy"},{label:'TCL 75" 4K',price:"$549",store:"Walmart"},{label:'Sony Bravia 65"',price:"$1,099",store:"Sony"}]},
+  {id:"gaming",icon:"🎮",name:"Gaming",tips:["PS5","Xbox","Nintendo","Steam Deck","Gaming Chair","Controller"],examples:[{label:"PS5 Console",price:"$499",store:"GameStop"},{label:"Xbox Series X",price:"$499",store:"Best Buy"},{label:"Nintendo Switch OLED",price:"$349",store:"Target"},{label:"Steam Deck",price:"$399",store:"Steam"}]},
+  {id:"cameras",icon:"📷",name:"Cameras & Photography",tips:["Canon","Nikon","Sony","GoPro","DJI","Mirrorless","DSLR"],examples:[{label:"Sony A7 IV",price:"$2,499",store:"B&H"},{label:"Canon EOS R50",price:"$679",store:"Amazon"},{label:"GoPro Hero 12",price:"$299",store:"GoPro"},{label:"DJI Mini 4 Pro",price:"$759",store:"DJI"}]},
+  {id:"smartdevices",icon:"🏠",name:"Smart Home Devices",tips:["Alexa","Google Home","Ring","Nest","Philips Hue","Roomba"],examples:[{label:"Amazon Echo Dot",price:"$49",store:"Amazon"},{label:"Ring Video Doorbell",price:"$99",store:"Ring"},{label:"Nest Thermostat",price:"$129",store:"Google"},{label:"Philips Hue Starter",price:"$89",store:"Best Buy"}]},
+  {section:"Home & Living"},
+  {id:"home",icon:"🍳",name:"Kitchen & Cooking",tips:["Air Fryer","Instant Pot","Coffee Maker","Blender","KitchenAid","Toaster"],examples:[{label:"Ninja AF101 Air Fryer",price:"$79",store:"Walmart"},{label:"Instant Pot Duo",price:"$89",store:"Target"},{label:"Keurig K-Elite",price:"$149",store:"Amazon"},{label:"KitchenAid Mixer",price:"$379",store:"Williams Sonoma"}]},
+  {id:"furniture",icon:"🛋️",name:"Furniture",tips:["Sofa","Bed Frame","Desk","Chair","Dresser","Bookshelf","Nightstand"],examples:[{label:"IKEA MALM Bed Frame",price:"$299",store:"IKEA"},{label:"West Elm Sofa",price:"$1,299",store:"West Elm"},{label:"Standing Desk",price:"$449",store:"Amazon"},{label:"Wayfair Dresser",price:"$249",store:"Wayfair"}]},
+  {id:"cleaning",icon:"🧹",name:"Cleaning Products",tips:["Roomba","Dyson","Tide","Swiffer","Mr. Clean","Bissell"],examples:[{label:"Roomba i7",price:"$449",store:"Best Buy"},{label:"Dyson V15 Vacuum",price:"$699",store:"Dyson"},{label:"Tide Pods 81ct",price:"$22",store:"Costco"},{label:"Swiffer WetJet",price:"$39",store:"Target"}]},
+  {id:"bedding",icon:"🛏️",name:"Bedding & Bath",tips:["Sheets","Comforter","Pillows","Towels","Mattress","Duvet"],examples:[{label:"Casper Mattress Queen",price:"$995",store:"Casper"},{label:"Brooklinen Sheet Set",price:"$149",store:"Brooklinen"},{label:"Purple Pillow",price:"$99",store:"Purple"},{label:"Parachute Comforter",price:"$199",store:"Parachute"}]},
+  {id:"tools",icon:"🔧",name:"Tools & Hardware",tips:["Drill","Dewalt","Milwaukee","Makita","Wrench","Saw","Level"],examples:[{label:"DeWalt Drill Set",price:"$199",store:"Home Depot"},{label:"Milwaukee Impact Driver",price:"$149",store:"Lowe's"},{label:"Ryobi Tool Set",price:"$299",store:"Home Depot"},{label:"Makita Circular Saw",price:"$189",store:"Amazon"}]},
+  {id:"garden",icon:"🌿",name:"Garden & Outdoor",tips:["Lawn Mower","BBQ Grill","Patio Set","Hose","Planter","Seeds"],examples:[{label:"Weber Genesis Grill",price:"$899",store:"Weber"},{label:"Patio Dining Set",price:"$599",store:"Wayfair"},{label:"Ego Lawn Mower",price:"$449",store:"Home Depot"},{label:"Solo Stove Bonfire",price:"$299",store:"REI"}]},
+  {section:"Health & Wellness"},
+  {id:"beauty",icon:"💄",name:"Beauty & Makeup",tips:["Foundation","Mascara","Lipstick","Concealer","Blush","Eyeshadow","Serum"],examples:[{label:"Dyson Airwrap",price:"$599",store:"Sephora"},{label:"Charlotte Tilbury Lipstick",price:"$36",store:"Ulta"},{label:"NARS Foundation",price:"$40",store:"Sephora"},{label:"Rare Beauty Blush",price:"$22",store:"Sephora"}]},
+  {id:"skincare",icon:"🧴",name:"Skincare",tips:["Moisturizer","SPF","Retinol","Vitamin C","Cleanser","Toner","Eye Cream"],examples:[{label:"CeraVe Moisturizer",price:"$18",store:"CVS"},{label:"La Roche-Posay SPF",price:"$21",store:"Walgreens"},{label:"The Ordinary Retinol",price:"$10",store:"ULTA"},{label:"Tatcha Water Cream",price:"$68",store:"Sephora"}]},
+  {id:"haircare",icon:"💇",name:"Hair Care",tips:["Shampoo","Conditioner","Olaplex","Hair Dryer","Flat Iron","Curling Wand"],examples:[{label:"Olaplex No.3",price:"$30",store:"Ulta"},{label:"Dyson Supersonic Dryer",price:"$429",store:"Dyson"},{label:"T3 Flat Iron",price:"$199",store:"Sephora"},{label:"Moroccanoil Treatment",price:"$46",store:"Ulta"}]},
+  {id:"supplements",icon:"💊",name:"Vitamins & Supplements",tips:["Protein","Creatine","Vitamin D","Omega-3","Pre-workout","Collagen"],examples:[{label:"Optimum Nutrition Whey",price:"$59",store:"GNC"},{label:"Garden of Life Vitamin",price:"$29",store:"Amazon"},{label:"Athletic Greens AG1",price:"$79",store:"AG1"},{label:"Creatine Monohydrate",price:"$29",store:"Amazon"}]},
+  {id:"sports",icon:"🏋️",name:"Sports & Fitness",tips:["Yoga Mat","Dumbbells","Running Shoes","Resistance Bands","Foam Roller"],examples:[{label:"Peloton Bike",price:"$1,445",store:"Peloton"},{label:"Lululemon Leggings",price:"$98",store:"Lululemon"},{label:"Nike Running Shoes",price:"$120",store:"Nike"},{label:"Bowflex Dumbbells",price:"$349",store:"Bowflex"}]},
+  {id:"medical",icon:"🩺",name:"Health & Medical",tips:["Blood Pressure Monitor","CPAP","Thermometer","Glucose Monitor","Heating Pad"],examples:[{label:"Omron Blood Pressure",price:"$59",store:"CVS"},{label:"Withings Scale",price:"$99",store:"Amazon"},{label:"Braun Thermometer",price:"$39",store:"Walgreens"},{label:"Theragun Mini",price:"$179",store:"Therabody"}]},
+  {section:"Food & Grocery"},
+  {id:"food",icon:"🍕",name:"Food & Snacks",tips:["Chips","Protein Bar","Coffee","Energy Drink","Candy","Crackers","Nuts"],examples:[{label:"Celsius Energy Drink 12pk",price:"$24",store:"Costco"},{label:"Quest Protein Bars 12pk",price:"$23",store:"Amazon"},{label:"Starbucks Ground Coffee",price:"$14",store:"Walmart"},{label:"Lay's Chips Party Size",price:"$6",store:"Target"}]},
+  {id:"grocery",icon:"🛒",name:"Grocery & Pantry",tips:["Olive Oil","Rice","Pasta","Sauce","Cereal","Flour","Sugar"],examples:[{label:"Kirkland Olive Oil",price:"$15",store:"Costco"},{label:"Rao's Marinara Sauce",price:"$10",store:"Target"},{label:"Cheerios Family Size",price:"$7",store:"Walmart"},{label:"Jasmine Rice 25lb",price:"$29",store:"Costco"}]},
+  {id:"drinks",icon:"🥤",name:"Drinks & Beverages",tips:["Water","Juice","Soda","Sports Drink","Tea","Sparkling Water","Beer"],examples:[{label:"Liquid IV 30ct",price:"$34",store:"Costco"},{label:"Premier Protein 18pk",price:"$38",store:"Costco"},{label:"Hint Water 36pk",price:"$36",store:"Amazon"},{label:"La Croix 24pk",price:"$12",store:"Walmart"}]},
+  {id:"alcohol",icon:"🍷",name:"Wine, Beer & Spirits",tips:["Wine","Whiskey","Tequila","Vodka","Beer","Champagne","Rum"],examples:[{label:"Casamigos Tequila",price:"$49",store:"Total Wine"},{label:"Whispering Angel Rosé",price:"$29",store:"Total Wine"},{label:"Don Julio 1942",price:"$169",store:"Total Wine"},{label:"Clase Azul Tequila",price:"$169",store:"Total Wine"}]},
+  {section:"Kids & Baby"},
+  {id:"toys",icon:"🧸",name:"Toys & Games",tips:["LEGO","Barbie","Hot Wheels","Nerf","Minecraft","Play-Doh","Puzzles"],examples:[{label:"LEGO Star Wars Set",price:"$79",store:"Target"},{label:"Barbie Dreamhouse",price:"$199",store:"Walmart"},{label:"Nerf Elite Blaster",price:"$29",store:"Amazon"},{label:"Nintendo Switch Lite",price:"$199",store:"Best Buy"}]},
+  {id:"baby",icon:"👶",name:"Baby & Toddler",tips:["Diapers","Stroller","Car Seat","Baby Food","Formula","Monitor"],examples:[{label:"Pampers Diapers Size 3",price:"$39",store:"Target"},{label:"UPPAbaby Stroller",price:"$899",store:"Buy Buy Baby"},{label:"Graco Car Seat",price:"$149",store:"Amazon"},{label:"Nanit Baby Monitor",price:"$299",store:"Nanit"}]},
+  {id:"kids_clothing",icon:"🧒",name:"Kids Clothing",tips:["Carter's","OshKosh","Nike Kids","Gap Kids","H&M Kids"],examples:[{label:"Carter's Onesie Set",price:"$24",store:"Carter's"},{label:"Nike Kids Sneakers",price:"$65",store:"Nike"},{label:"Gap Kids Jeans",price:"$39",store:"Gap"},{label:"OshKosh Overalls",price:"$32",store:"Carter's"}]},
+  {section:"Automotive"},
+  {id:"auto",icon:"🚗",name:"Car Accessories",tips:["Car Seat Cover","Dash Cam","Phone Mount","Jump Starter","Wiper Blades","Floor Mats"],examples:[{label:"Garmin Dash Cam",price:"$129",store:"Amazon"},{label:"WeatherTech Floor Mats",price:"$149",store:"WeatherTech"},{label:"NOCO Jump Starter",price:"$99",store:"Amazon"},{label:"Armor All Car Kit",price:"$19",store:"Walmart"}]},
+  {id:"car_care",icon:"🔩",name:"Car Care & Parts",tips:["Oil","Tires","Brakes","Battery","Air Filter","Wiper Blades"],examples:[{label:"Mobil 1 Synthetic Oil 5qt",price:"$29",store:"Walmart"},{label:"Bosch Wiper Blades",price:"$25",store:"AutoZone"},{label:"K&N Air Filter",price:"$59",store:"Amazon"},{label:"Rain-X Windshield",price:"$12",store:"AutoZone"}]},
+  {section:"Books, Music & Entertainment"},
+  {id:"books",icon:"📚",name:"Books",tips:["Bestseller","Self-Help","Fiction","Biography","Children's","Textbook","Cookbook"],examples:[{label:"Atomic Habits",price:"$18",store:"Amazon"},{label:"Harry Potter Box Set",price:"$89",store:"Barnes & Noble"},{label:"The Alchemist",price:"$15",store:"Amazon"},{label:"48 Laws of Power",price:"$21",store:"Amazon"}]},
+  {id:"music",icon:"🎵",name:"Music & Instruments",tips:["Guitar","Keyboard","Drum Kit","Vinyl","Ukulele","Microphone","DJ Equipment"],examples:[{label:"Fender Stratocaster",price:"$699",store:"Guitar Center"},{label:"Yamaha P-45 Piano",price:"$449",store:"Guitar Center"},{label:"Audio-Technica Turntable",price:"$249",store:"Amazon"},{label:"Shure SM7B Mic",price:"$359",store:"B&H"}]},
+  {id:"movies",icon:"🎬",name:"Movies & TV",tips:["Blu-ray","4K","DVD","Streaming Device","Apple TV","Fire Stick","Roku"],examples:[{label:"Apple TV 4K",price:"$129",store:"Apple"},{label:"Amazon Fire Stick 4K",price:"$49",store:"Amazon"},{label:"Avengers 4K Box Set",price:"$59",store:"Amazon"},{label:"Roku Streaming Stick",price:"$39",store:"Walmart"}]},
+  {section:"Travel & Luggage"},
+  {id:"travel",icon:"✈️",name:"Travel & Luggage",tips:["Carry-on","Suitcase","Travel Pillow","Passport Holder","Packing Cubes","Away","Samsonite"],examples:[{label:"Away Carry-On",price:"$295",store:"Away"},{label:"Samsonite 3-Piece Set",price:"$299",store:"Amazon"},{label:"Beis Weekender Bag",price:"$128",store:"Beis"},{label:"Tumi Alpha Backpack",price:"$495",store:"Tumi"}]},
+  {id:"outdoors",icon:"⛺",name:"Outdoor & Camping",tips:["Tent","Sleeping Bag","Hiking Boots","Backpack","Lantern","Cooler"],examples:[{label:"Coleman 4-Person Tent",price:"$89",store:"Amazon"},{label:"Yeti Cooler 45qt",price:"$325",store:"Yeti"},{label:"Osprey Backpack",price:"$199",store:"REI"},{label:"Patagonia Down Jacket",price:"$279",store:"Patagonia"}]},
+  {section:"Office & School"},
+  {id:"office",icon:"🖊️",name:"Office Supplies",tips:["Printer","Desk Organizer","Stapler","Notebooks","Pens","Whiteboard","Shredder"],examples:[{label:"HP LaserJet Printer",price:"$199",store:"Best Buy"},{label:"Moleskine Notebook",price:"$18",store:"Amazon"},{label:"Fellowes Shredder",price:"$89",store:"Staples"},{label:"Logitech Keyboard",price:"$49",store:"Amazon"}]},
+  {id:"school",icon:"🎒",name:"School Supplies",tips:["Backpack","Pencils","Calculator","Binders","Notebooks","Highlighters","Glue"],examples:[{label:"JanSport Backpack",price:"$49",store:"Target"},{label:"TI-84 Calculator",price:"$89",store:"Walmart"},{label:"Crayola Colored Pencils",price:"$12",store:"Amazon"},{label:"Mead Composition Books",price:"$8",store:"Staples"}]},
+  {section:"Pets"},
+  {id:"pets",icon:"🐾",name:"Pet Supplies",tips:["Dog Food","Cat Litter","Pet Bed","Leash","Collar","Toys","Treats","Crate"],examples:[{label:"Royal Canin Dog Food",price:"$69",store:"Chewy"},{label:"Purina Pro Plan Cat",price:"$49",store:"PetSmart"},{label:"Midwest Dog Crate",price:"$59",store:"Amazon"},{label:"Furbo Dog Camera",price:"$139",store:"Amazon"}]},
 ];
-const VERDICT={
-  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D"},
-  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534"},
-  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E"},
-  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
-};
+
 const STORE_URLS={
   "amazon":"https://www.amazon.com/s?k=",
   "ebay":"https://www.ebay.com/sch/i.html?_nkw=",
   "walmart":"https://www.walmart.com/search?q=",
   "target":"https://www.target.com/s?searchTerm=",
   "best buy":"https://www.bestbuy.com/site/searchpage.jsp?st=",
+  "bestbuy":"https://www.bestbuy.com/site/searchpage.jsp?st=",
   "costco":"https://www.costco.com/CatalogSearch?keyword=",
   "poshmark":"https://poshmark.com/search?query=",
-  "newegg":"https://www.newegg.com/p/pl?d=",
-  "homedepot":"https://www.homedepot.com/s/",
+  "stockx":"https://stockx.com/search?s=",
+  "goat":"https://www.goat.com/search?query=",
+  "nike":"https://www.nike.com/search?q=",
+  "adidas":"https://www.adidas.com/us/search?q=",
+  "foot locker":"https://www.footlocker.com/search?query=",
+  "footlocker":"https://www.footlocker.com/search?query=",
+  "nordstrom":"https://www.nordstrom.com/sr?keyword=",
+  "macys":"https://www.macys.com/shop/search?keyword=",
+  "macy":"https://www.macys.com/shop/search?keyword=",
+  "asos":"https://www.asos.com/us/search/?q=",
+  "etsy":"https://www.etsy.com/search?q=",
+  "zales":"https://www.zales.com/search?q=",
+  "kay":"https://www.kay.com/search?q=",
+  "sephora":"https://www.sephora.com/search?keyword=",
+  "ulta":"https://www.ulta.com/search?search=",
+  "wayfair":"https://www.wayfair.com/keyword.php?keyword=",
   "home depot":"https://www.homedepot.com/s/",
+  "homedepot":"https://www.homedepot.com/s/",
+  "lowe":"https://www.lowes.com/search?searchTerm=",
+  "ikea":"https://www.ikea.com/us/en/search/?q=",
+  "gamestop":"https://www.gamestop.com/search/?q=",
+  "newegg":"https://www.newegg.com/p/pl?d=",
+  "dick":"https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=",
+  "chewy":"https://www.chewy.com/s?query=",
+  "petsmart":"https://www.petsmart.com/search?q=",
+  "petco":"https://www.petco.com/shop/en/petcostore/search?q=",
+  "rei":"https://www.rei.com/search?q=",
+  "total wine":"https://www.totalwine.com/search/all?text=",
+  "guitar center":"https://www.guitarcenter.com/search?N=4294967131&Ntt=",
+  "gnc":"https://www.gnc.com/search?q=",
+  "cvs":"https://www.cvs.com/search/?searchTerm=",
+  "walgreen":"https://www.walgreens.com/search/results.jsp?Ntt=",
+  "staples":"https://www.staples.com/search?query=",
+  "autozone":"https://www.autozone.com/searchresult?searchtext=",
+  "lids":"https://www.lids.com/search?q=",
+  "coach":"https://www.coach.com/search?q=",
+  "lululemon":"https://shop.lululemon.com/search?Ntt=",
+  "sunglass hut":"https://www.sunglasshut.com/us/search?q=",
+  "barnes":"https://www.barnesandnoble.com/s/",
+  "gap":"https://www.gap.com/browse/search.do?searchText=",
+  "zara":"https://www.zara.com/us/en/search?searchTerm=",
 };
+
 function getStoreUrl(source,item){
   const s=source.toLowerCase();
   const match=Object.keys(STORE_URLS).find(k=>s.includes(k));
-  return match?STORE_URLS[match]+encodeURIComponent(item):"https://www."+s.replace(/[^a-z0-9]/g,"")+".com/search?q="+encodeURIComponent(item);
+  return(match?STORE_URLS[match]:"https://www.amazon.com/s?k=")+encodeURIComponent(item);
 }
-let state={screen:"home",item:"",price:"",store:"",loading:false,loadStep:"",result:null,history:[]};
+
+const RETAIL_PRICES={"jordan":150,"yeezy":220,"air force":110,"dunk":110,"louis vuitton":800,"gucci":500,"chanel":1000,"rolex":5000,"iphone":799,"airpods pro":189,"ps5":499};
+function checkScam(item,price){
+  const il=item.toLowerCase();const pN=parseFloat(String(price).replace(/[^0-9.]/g,""))||0;
+  for(const[k,r] of Object.entries(RETAIL_PRICES)){if(il.includes(k)&&pN>0&&pN<r*0.4)return`⚠️ Red flag: ${item} retails for ~$${r}. This price is suspiciously low — could be fake.`;}
+  return null;
+}
+
+const VERDICT={
+  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D"},
+  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534"},
+  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E"},
+  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
+};
+
+let state={screen:"home",item:"",price:"",store:"",size:"",loading:false,loadStep:"",result:null,history:[],categoryId:"all"};
+
+const CATS=CATEGORIES.filter(c=>c.id);
+function getCat(){return CATS.find(c=>c.id===state.categoryId)||CATS[0]}
 function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad"}
-function pick(text,label){if(!text)return null;const m=text.match(new RegExp(label+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
+function pick(t,l){if(!t)return null;const m=t.match(new RegExp(l+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
 function setState(u){Object.assign(state,u);render()}
+
+function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open")}
+function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open")}
+function selectCategory(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";closeSidebar();render()}
+
+function buildSidebar(){
+  const list=document.getElementById("cat-list");if(!list)return;
+  list.innerHTML=CATEGORIES.map(c=>c.section
+    ?`<div class="cat-section-label">${c.section}</div>`
+    :`<div class="cat-item ${state.categoryId===c.id?"active":""}" onclick="selectCategory('${c.id}')"><span class="cat-icon">${c.icon}</span><span class="cat-name ${state.categoryId===c.id?"active":""}">${c.name}</span></div>`
+  ).join("");
+}
 
 async function analyze(){
   if(!state.item||!state.price)return;
-  setState({loading:true,screen:"result",result:null,loadStep:"Searching live prices across stores..."});
+  const cat=getCat();
+  setState({loading:true,screen:"result",result:null,loadStep:"Searching live prices..."});
   let priceList=[],lowestPrice=null,lowestSource=null,priceDiff=null;
   try{
-    const res=await fetch(`${SERVER}/prices?q=${encodeURIComponent(state.item)}`);
+    const q=state.item+(state.size?` size ${state.size}`:"");
+    const res=await fetch(`${SERVER}/prices?q=${encodeURIComponent(q)}`);
     const data=await res.json();
     if(Array.isArray(data)&&data.length>0){
-      priceList=data.filter(r=>r.price).slice(0,8).map(r=>({
-        price:r.price,source:r.source||"Unknown",
-        link:r.link||null,
-        priceNum:parseFloat(String(r.price).replace(/[^0-9.]/g,""))||999999
-      })).sort((a,b)=>a.priceNum-b.priceNum);
+      priceList=data.filter(r=>r.price).slice(0,8).map(r=>({price:r.price,source:r.source||"Unknown",link:r.link||null,priceNum:parseFloat(String(r.price).replace(/[^0-9.]/g,""))||999999})).sort((a,b)=>a.priceNum-b.priceNum);
       if(priceList.length>0){
         lowestPrice=priceList[0].price;lowestSource=priceList[0].source;
         const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
         if(uN>priceList[0].priceNum)priceDiff=((uN-priceList[0].priceNum)/uN*100).toFixed(0);
       }
     }
-  }catch(e){console.log("Price error",e)}
+  }catch(e){}
   setState({loadStep:"Running AI analysis..."});
   const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
   const ctx=priceList.length>0?`LIVE PRICES:\n${priceList.slice(0,6).map(r=>`- ${r.source}: ${r.price}`).join("\n")}\nLowest: ${lowestPrice} at ${lowestSource}${priceDiff?`\nOverpaying by: ${priceDiff}%`:""}`:"No live data.";
-  const prompt=`You are a brutally honest shopping advisor.\n\nITEM: ${state.item}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY in this format:\n\nSCORE: [0-100 number only]\n\nONE LINE: [one punchy sentence]\n\nPRICE HISTORY: [is this high, low or average? when does it go on sale?]\n\nWAIT OR BUY: [start with BUY NOW or WAIT then explain why]\n\nBOTTOM LINE: [2 sentences, exactly what to do]`;
+  const isAuthenticity=["sneakers","clothing","bags","jewelry","watches","sunglasses"].includes(cat.id);
+  const prompt=`You are a brutally honest shopping advisor.\n\nCATEGORY: ${cat.icon} ${cat.name}\nITEM: ${state.item}${state.size?` (Size: ${state.size})`:""}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY:\n\nSCORE: [0-100]\n\nONE LINE: [punchy honest sentence]\n\nPRICE HISTORY: [is this high/low/average? when does it go on sale?]\n${isAuthenticity?"AUTHENTICITY: [is this price suspicious for this brand? could it be fake or counterfeit?]\n":""}\nWAIT OR BUY: [BUY NOW or WAIT + specific reason]\n\nBOTTOM LINE: [2 sentences, what to do]`;
   try{
     const r=await fetch(`${SERVER}/analyze`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
-    const d=await r.json();
-    const text=d.text||"";
+    const d=await r.json();const text=d.text||"";
     const sm=text.match(/SCORE:\s*(\d+)/i);
     const score=sm?Math.min(100,Math.max(0,parseInt(sm[1]))):50;
-    const nr={item:state.item,price:state.price,store:state.store,verdictKey:scoreToVerdict(score),score,text,priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
-    state.history=[nr,...state.history.slice(0,9)];
-    setState({loading:false,result:nr});
+    const scamWarn=checkScam(state.item,state.price);
+    const nr={item:state.item,price:state.price,store:state.store,size:state.size,categoryId:state.categoryId,verdictKey:scoreToVerdict(score),score,text,priceList,lowestPrice,lowestSource,priceDiff,scamWarn,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+    state.history=[nr,...state.history.slice(0,9)];setState({loading:false,result:nr});
   }catch(e){
     const lN=priceList[0]?.priceNum||uN;
     const as=Math.max(0,Math.min(100,Math.round(100-((uN-lN)/Math.max(uN,1))*150)));
-    const nr={item:state.item,price:state.price,store:state.store,verdictKey:scoreToVerdict(as),score:as,text:"",priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
-    state.history=[nr,...state.history.slice(0,9)];
-    setState({loading:false,result:nr});
+    const scamWarn=checkScam(state.item,state.price);
+    const nr={item:state.item,price:state.price,store:state.store,size:state.size,categoryId:state.categoryId,verdictKey:scoreToVerdict(as),score:as,text:"",priceList,lowestPrice,lowestSource,priceDiff,scamWarn,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+    state.history=[nr,...state.history.slice(0,9)];setState({loading:false,result:nr});
   }
 }
 
@@ -172,74 +318,72 @@ function renderResult(){
   const r=state.result;if(!r)return"";
   const v=r.verdictKey;const vd=VERDICT[v];const sc=r.score;const tx=r.text;
   const oneLine=pick(tx,"ONE LINE");const hist=pick(tx,"PRICE HISTORY");
-  const wob=pick(tx,"WAIT OR BUY");const bottom=pick(tx,"BOTTOM LINE");
+  const auth=pick(tx,"AUTHENTICITY");const wob=pick(tx,"WAIT OR BUY");const bottom=pick(tx,"BOTTOM LINE");
   const isWait=wob?.toLowerCase().startsWith("wait");
   const pl=r.priceList||[];const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
+  const cat=CATS.find(c=>c.id===r.categoryId)||CATS[0];
   if(state.loading)return`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`;
   let priceRows="";
   if(pl.length>0){
-    const ur=`<div class="prow user"><div><div class="pstore user">📍 ${r.store||"Your Store"}</div><div class="psub user">Where you're standing</div></div><span class="price user">${r.price}</span></div>`;
+    const ur=`<div class="prow user"><div><div class="pstore user">📍 ${r.store||"Your Store"}</div><div class="psub red">Where you're standing</div></div><span class="price user">${r.price}</span></div>`;
     const rows=pl.slice(0,6).map((p,i)=>{
-      const il=i===0;
-      const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
-      const buyUrl=getStoreUrl(p.source,r.item);
-      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')">
-        <div>
-          <div class="pstore">${il?"🏆 ":""}${p.source}</div>
-          ${il?'<div class="psub low">Cheapest found</div>':""}
-          <div class="psub link">Tap to buy →</div>
-        </div>
-        <div class="pright">${sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div>
-      </div>`;
+      const il=i===0;const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
+      const isSus=uN>0&&p.priceNum<uN*0.3&&uN>50;
+      const buyUrl=getStoreUrl(p.source,r.item+(r.size?` ${r.size}`:""));
+      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')"><div><div class="pstore">${il?"🏆 ":""}${p.source}</div>${il?'<div class="psub low">Cheapest found</div>':""}${isSus?'<div class="psub red">⚠️ Verify authenticity</div>':'<div class="psub link">Tap to buy →</div>'}</div><div class="pright">${isSus?'<span class="fakebadge">⚠️</span>':sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div></div>`;
     }).join("");
-    priceRows=`<div class="ptable"><div class="phdr"><span class="phdrt">Live Prices Across Stores</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
+    priceRows=`<div class="ptable"><div class="phdr"><span class="phdrt">${cat.icon} Live Prices</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
   }
   return`
     <div class="banner" style="background:${vd.bg};border:1px solid ${vd.border}">
-      <div class="scorerow" style="color:${vd.color}">Deal Score: ${sc} / 100</div>
+      <div class="scorerow" style="color:${vd.color}">${cat.icon} ${cat.name} · Score: ${sc}/100</div>
       <span class="bige">${vd.emoji}</span>
       <div class="vlabel" style="color:${vd.color}">${vd.label}</div>
-      <div class="vitem">${r.item} · ${r.price}${r.store?` at ${r.store}`:""}</div>
+      <div class="vitem">${r.item}${r.size?` · ${r.size}`:""} · ${r.price}${r.store?` at ${r.store}`:""}</div>
       <div class="barw"><div class="barf" style="width:${sc}%;background:${vd.color}"></div></div>
-      ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="savemsg">💰 You could save ${r.priceDiff}% buying elsewhere</div>`:""}
+      ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="savemsg">💰 Save ${r.priceDiff}% buying elsewhere</div>`:""}
+      ${r.scamWarn?`<div class="warn">${r.scamWarn}</div>`:""}
     </div>
     ${oneLine?`<div class="sec"><div class="sect">The Verdict</div><p class="secp" style="font-style:italic;color:#C0C0E0;font-size:16px">"${oneLine}"</p></div>`:""}
     ${priceRows}
+    ${auth?`<div class="sec" style="border-color:#854D0E"><div class="sect">🔍 Authenticity</div><p class="secp">${auth}</p></div>`:""}
     ${hist?`<div class="sec"><div class="sect">📈 Price History</div><p class="secp">${hist}</p></div>`:""}
-    ${wob?`<div class="wob ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait for a better price":"Buy it now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
+    ${wob?`<div class="wob ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait":"Buy Now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
     ${bottom?`<div class="sec" style="border:1px solid ${vd.border}"><div class="sect">Bottom Line</div><p class="secp">${bottom}</p></div>`:""}
     <div class="actrow"><button class="newbtn" onclick="doReset()">Check Another</button><button class="shrbtn" onclick="doShare()">📋 Share</button></div>`;
 }
 
 function render(){
-  const hc=state.history.length;
-  const hdrR=state.screen==="home"?`<button class="hbtn" onclick="setState({screen:'history'})">History${hc>0?` (${hc})`:""}</button>`:`<button class="hbtn" onclick="doReset()">← New Check</button>`;
+  const cat=getCat();const hc=state.history.length;
+  const hdrR=state.screen==="home"?`<button class="hbtn" onclick="setState({screen:'history'})">History${hc>0?` (${hc})`:""}</button>`:`<button class="hbtn" onclick="doReset()">← Back</button>`;
+  const needsSize=["sneakers","clothing","bags","kids_clothing"].includes(cat.id);
   let body="";
   if(state.screen==="home"){
-    body=`<div class="hero"><span class="tag">🟢 Live Prices · Real Stores</span><h1>Is this a<br>good deal?</h1><p class="sub">Real prices from Amazon, Walmart, Target and more — checked in seconds.</p></div>
+    body=`<div class="hero"><div class="cat-badge">${cat.icon} ${cat.name}</div><h1>Is this a<br>good deal?</h1><p class="sub">Live prices · Scam detection · AI verdict</p></div>
     <div class="form">
       <label class="lbl" style="margin-top:0">What is it?</label>
-      <input type="text" placeholder="AirPods Pro, Ninja Air Fryer..." value="${state.item}" oninput="state.item=this.value;upd()">
+      <input type="text" id="ii" placeholder="e.g. ${cat.examples[0]?.label||"Item name"}" value="${state.item}" oninput="state.item=this.value;upd()">
+      ${needsSize?`<label class="lbl">Size (optional)</label><input type="text" placeholder="${cat.id==="sneakers"?"e.g. 10.5 Men's":"e.g. Large / 32x30"}" value="${state.size}" oninput="state.size=this.value">`:""}
       <label class="lbl">Price you see</label>
-      <input type="text" placeholder="$189" value="${state.price}" oninput="state.price=this.value;upd()">
+      <input type="text" id="ip" placeholder="$99" value="${state.price}" oninput="state.price=this.value;upd()">
       <label class="lbl">Store (optional)</label>
-      <input type="text" placeholder="Best Buy, Walmart, Target..." value="${state.store}" oninput="state.store=this.value">
+      <input type="text" placeholder="Where are you shopping?" value="${state.store}" oninput="state.store=this.value">
       <button id="gb" class="${state.item&&state.price?"gobtn on":"gobtn off"}" onclick="if(state.item&&state.price)analyze()">${state.item&&state.price?"Check the deal →":"Enter item + price above"}</button>
     </div>
-    <div class="exwrap"><div class="exlbl">Try an example</div><div class="exgrid">
-      ${EXAMPLES.map((ex,i)=>`<div class="exchip" onclick="fillEx(${i})"><div class="exname">${ex.label}</div><div class="exmeta">${ex.price} · ${ex.store}</div></div>`).join("")}
-    </div></div>`;
+    ${cat.tips&&cat.tips.length>0?`<div class="tips">${cat.tips.map(t=>`<span class="tip" onclick="state.item='${t}';document.getElementById('ii').value='${t}';upd()">${t}</span>`).join("")}</div>`:""}
+    <div class="exwrap"><div class="exlbl">Quick Examples</div><div class="exgrid">${cat.examples.map((ex,i)=>`<div class="exchip" onclick="fillEx(${i})"><div class="exname">${ex.label}</div><div class="exmeta">${ex.price} · ${ex.store}</div></div>`).join("")}</div></div>`;
   }else if(state.screen==="result"){
     body=state.loading?`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`:renderResult();
   }else if(state.screen==="history"){
-    body=`<div class="pagesec"><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`).join(""));
+    body=`<div class="pagesec"><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>{const hcat=CATS.find(c=>c.id===h.categoryId)||CATS[0];return`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${hcat.icon} ${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`;}).join(""));
   }
-  document.getElementById("app").innerHTML=`<div class="hdr"><div class="logo"><span>🔍</span><span>GoodDeal?</span></div>${hdrR}</div><div class="body">${body}</div>`;
+  document.getElementById("app").innerHTML=`<div class="hdr"><div class="hdr-left"><button class="menubtn" onclick="openSidebar()">☰</button><div class="logo"><span>🔍</span><span>GoodDeal?</span></div></div>${hdrR}</div><div class="body">${body}</div>`;
+  buildSidebar();
 }
 
-function fillEx(i){const e=EXAMPLES[i];state.item=e.label;state.price=e.price;state.store=e.store;render()}
+function fillEx(i){const e=getCat().examples[i];state.item=e.label;state.price=e.price;state.store=e.store;render()}
 function doReset(){setState({screen:"home",result:null})}
-function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;setState({screen:"result",result:h})}
+function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;state.size=h.size||"";state.categoryId=h.categoryId||"all";setState({screen:"result",result:h})}
 function upd(){const b=document.getElementById("gb");if(!b)return;const on=state.item&&state.price;b.className=on?"gobtn on":"gobtn off";b.textContent=on?"Check the deal →":"Enter item + price above"}
 function doShare(){const r=state.result;if(!r)return;const vd=VERDICT[r.verdictKey];const ol=pick(r.text,"ONE LINE");const ch=r.priceList?.[0]?`\nCheapest: ${r.priceList[0].source} at ${r.priceList[0].price}`:"";const t=`${vd.emoji} ${r.item} for ${r.price} — ${vd.label} (${r.score}/100)${ch}\n\n"${ol||""}"\n\nChecked with GoodDeal?`;navigator.clipboard?.writeText(t).then(()=>alert("Copied!")).catch(()=>alert(t))}
 render();
