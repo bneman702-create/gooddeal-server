@@ -5,86 +5,86 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>GoodDeal? — Is this a good deal?</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#08080B;color:#F0F0F6;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
-  #app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh}
-  .hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28}
-  .logo{font-size:18px;font-weight:900;letter-spacing:-0.5px;display:flex;align-items:center;gap:7px}
-  .hbtn{background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}
-  .body{flex:1;padding-bottom:48px;overflow-y:auto}
-  .hero{padding:28px 20px 0;text-align:center}
-  .tag{display:inline-block;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
-  h1{font-size:34px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:10px}
-  .sub{font-size:14px;color:#52526E;line-height:1.5}
-  .form{margin:22px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
-  .lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;display:block;margin-top:12px}
-  input{width:100%;background:#08080B;border:1px solid #1C1C28;border-radius:10px;padding:12px 14px;color:#F0F0F6;font-size:15px;font-family:inherit;outline:none;margin-top:5px}
-  input:focus{border-color:#6366F1}
-  input::placeholder{color:#2A2A42}
-  .gobtn{width:100%;border:none;border-radius:12px;padding:15px 0;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:-0.3px;margin-top:14px}
-  .gobtn.on{background:#6366F1;color:#fff}
-  .gobtn.off{background:#14143A;color:#52526E;cursor:default}
-  .exwrap{margin:18px 16px 0}
-  .exlbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
-  .exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .exchip{background:#0F0F15;border:1px solid #1C1C28;border-radius:12px;padding:10px 12px;cursor:pointer}
-  .exname{font-size:13px;font-weight:700;margin-bottom:2px}
-  .exmeta{font-size:11px;color:#52526E}
-  .lwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:0 24px}
-  .spin{width:44px;height:44px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .litem{font-size:22px;font-weight:900;text-align:center}
-  .lstep{font-size:13px;color:#52526E;text-align:center}
-  .banner{margin:18px 16px 0;border-radius:18px;padding:22px 18px 18px}
-  .scorerow{text-align:center;font-size:12px;font-weight:700;margin-bottom:8px}
-  .bige{font-size:48px;display:block;text-align:center;margin-bottom:8px}
-  .vlabel{font-size:26px;font-weight:900;text-align:center;margin-bottom:4px;letter-spacing:-0.8px}
-  .vitem{font-size:13px;color:#52526E;text-align:center}
-  .barw{margin:14px 0 0;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
-  .barf{height:100%;border-radius:999px}
-  .savemsg{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#22C55E}
-  .sec{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:15px 16px}
-  .sect{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
-  .secp{font-size:15px;line-height:1.55;margin:0}
-  .ptable{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;overflow:hidden}
-  .phdr{padding:10px 16px;background:#12122A;display:flex;justify-content:space-between;align-items:center}
-  .phdrt{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase}
-  .live{display:flex;align-items:center;gap:5px;font-size:11px;color:#22C55E;font-weight:600}
-  .livedot{width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
-  .prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center}
-  .prow.user{background:#1A0808}
-  .prow.lowest{background:#071A0A}
-  .pstore{font-size:14px;font-weight:600}
-  .pstore.user{color:#F87171}
-  .psub{font-size:11px;margin-top:2px}
-  .psub.user{color:#F87171}
-  .psub.low{color:#22C55E}
-  .psub.link{color:#6366F1}
-  .pright{display:flex;align-items:center;gap:8px}
-  .price{font-size:15px;font-weight:800}
-  .price.user{color:#F87171}
-  .price.lowest{color:#22C55E}
-  .savebadge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
-  .wob{margin:10px 16px 0;border-radius:14px;padding:15px 16px;display:flex;align-items:flex-start;gap:12px}
-  .wob.wait{background:#120E00;border:1px solid #854D0E}
-  .wob.buy{background:#021208;border:1px solid #14532D}
-  .wobicon{font-size:26px;flex-shrink:0}
-  .wobtitle{font-size:13px;font-weight:800;margin-bottom:4px}
-  .wobtitle.wait{color:#FACC15}
-  .wobtitle.buy{color:#22C55E}
-  .wobtext{font-size:14px;line-height:1.5}
-  .actrow{display:flex;gap:10px;margin:16px 16px 0}
-  .newbtn{flex:1;background:#6366F1;border:none;color:#fff;border-radius:12px;padding:14px 0;font-size:15px;font-weight:800;cursor:pointer}
-  .shrbtn{flex:1;background:#0F0F15;border:1px solid #1C1C28;color:#F0F0F6;border-radius:12px;padding:14px 0;font-size:15px;font-weight:700;cursor:pointer}
-  .hcard{margin:8px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px}
-  .hinfo{flex:1}
-  .hname{font-size:14px;font-weight:700;margin-bottom:2px}
-  .hmeta{font-size:12px;color:#52526E}
-  .hverd{font-size:12px;font-weight:700;white-space:nowrap}
-  .empty{text-align:center;color:#52526E;margin-top:60px;font-size:15px;line-height:1.7}
-  .pagesec{padding:20px 18px 12px}
-  .pagetitle{font-size:22px;font-weight:900}
-  .pagesub{font-size:13px;color:#52526E;margin-top:4px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#08080B;color:#F0F0F6;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh}
+.hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28}
+.logo{font-size:18px;font-weight:900;display:flex;align-items:center;gap:7px}
+.hbtn{background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.body{flex:1;padding-bottom:48px;overflow-y:auto}
+.hero{padding:28px 20px 0;text-align:center}
+.tag{display:inline-block;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:34px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:10px}
+.sub{font-size:14px;color:#52526E;line-height:1.5}
+.form{margin:22px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
+.lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;display:block;margin-top:12px}
+input{width:100%;background:#08080B;border:1px solid #1C1C28;border-radius:10px;padding:12px 14px;color:#F0F0F6;font-size:15px;font-family:inherit;outline:none;margin-top:5px}
+input:focus{border-color:#6366F1}
+input::placeholder{color:#2A2A42}
+.gobtn{width:100%;border:none;border-radius:12px;padding:15px 0;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px}
+.gobtn.on{background:#6366F1;color:#fff}
+.gobtn.off{background:#14143A;color:#52526E;cursor:default}
+.exwrap{margin:18px 16px 0}
+.exlbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.exchip{background:#0F0F15;border:1px solid #1C1C28;border-radius:12px;padding:10px 12px;cursor:pointer}
+.exname{font-size:13px;font-weight:700;margin-bottom:2px}
+.exmeta{font-size:11px;color:#52526E}
+.lwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:0 24px}
+.spin{width:44px;height:44px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.litem{font-size:22px;font-weight:900;text-align:center}
+.lstep{font-size:13px;color:#52526E;text-align:center}
+.banner{margin:18px 16px 0;border-radius:18px;padding:22px 18px 18px}
+.scorerow{text-align:center;font-size:12px;font-weight:700;margin-bottom:8px}
+.bige{font-size:48px;display:block;text-align:center;margin-bottom:8px}
+.vlabel{font-size:26px;font-weight:900;text-align:center;margin-bottom:4px;letter-spacing:-0.8px}
+.vitem{font-size:13px;color:#52526E;text-align:center}
+.barw{margin:14px 0 0;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+.barf{height:100%;border-radius:999px}
+.savemsg{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#22C55E}
+.sec{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:15px 16px}
+.sect{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.secp{font-size:15px;line-height:1.55;margin:0}
+.ptable{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;overflow:hidden}
+.phdr{padding:10px 16px;background:#12122A;display:flex;justify-content:space-between;align-items:center}
+.phdrt{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:#22C55E;font-weight:600}
+.livedot{width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
+.prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center}
+.prow.user{background:#1A0808}
+.prow.lowest{background:#071A0A}
+.pstore{font-size:14px;font-weight:600}
+.pstore.user{color:#F87171}
+.psub{font-size:11px;margin-top:2px}
+.psub.user{color:#F87171}
+.psub.low{color:#22C55E}
+.psub.link{color:#6366F1}
+.pright{display:flex;align-items:center;gap:8px}
+.price{font-size:15px;font-weight:800}
+.price.user{color:#F87171}
+.price.lowest{color:#22C55E}
+.savebadge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
+.wob{margin:10px 16px 0;border-radius:14px;padding:15px 16px;display:flex;align-items:flex-start;gap:12px}
+.wob.wait{background:#120E00;border:1px solid #854D0E}
+.wob.buy{background:#021208;border:1px solid #14532D}
+.wobicon{font-size:26px;flex-shrink:0}
+.wobtitle{font-size:13px;font-weight:800;margin-bottom:4px}
+.wobtitle.wait{color:#FACC15}
+.wobtitle.buy{color:#22C55E}
+.wobtext{font-size:14px;line-height:1.5}
+.actrow{display:flex;gap:10px;margin:16px 16px 0}
+.newbtn{flex:1;background:#6366F1;border:none;color:#fff;border-radius:12px;padding:14px 0;font-size:15px;font-weight:800;cursor:pointer}
+.shrbtn{flex:1;background:#0F0F15;border:1px solid #1C1C28;color:#F0F0F6;border-radius:12px;padding:14px 0;font-size:15px;font-weight:700;cursor:pointer}
+.hcard{margin:8px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px}
+.hinfo{flex:1}
+.hname{font-size:14px;font-weight:700;margin-bottom:2px}
+.hmeta{font-size:12px;color:#52526E}
+.hverd{font-size:12px;font-weight:700;white-space:nowrap}
+.empty{text-align:center;color:#52526E;margin-top:60px;font-size:15px;line-height:1.7}
+.pagesec{padding:20px 18px 12px}
+.pagetitle{font-size:22px;font-weight:900}
+.pagesub{font-size:13px;color:#52526E;margin-top:4px}
 </style>
 </head>
 <body>
@@ -98,12 +98,12 @@ const EXAMPLES=[
   {label:'Samsung 65" 4K TV',price:"$797",store:"Costco"},
 ];
 const VERDICT={
-  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D",bar:93},
-  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534",bar:72},
-  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E",bar:46},
-  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B",bar:15},
+  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D"},
+  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534"},
+  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E"},
+  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
 };
-let state={screen:"home",item:"",price:"",store:"",loading:false,loadStep:"",result:null,history:[],imgSrc:null};
+let state={screen:"home",item:"",price:"",store:"",loading:false,loadStep:"",result:null,history:[]};
 function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad"}
 function pick(text,label){if(!text)return null;const m=text.match(new RegExp(label+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
 function setState(u){Object.assign(state,u);render()}
@@ -137,8 +137,7 @@ async function analyze(){
     const d=await r.json();const text=d.text||"";
     const sm=text.match(/SCORE:\s*(\d+)/i);
     const score=sm?Math.min(100,Math.max(0,parseInt(sm[1]))):50;
-    const vk=scoreToVerdict(score);
-    const nr={item:state.item,price:state.price,store:state.store,verdictKey:vk,score,text,priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+    const nr={item:state.item,price:state.price,store:state.store,verdictKey:scoreToVerdict(score),score,text,priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
     state.history=[nr,...state.history.slice(0,9)];
     setState({loading:false,result:nr});
   }catch(e){
@@ -164,10 +163,16 @@ function renderResult(){
     const rows=pl.slice(0,6).map((p,i)=>{
       const il=i===0;
       const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
-      const click=p.link?`onclick="window.open('${p.link}','_blank')" style="cursor:pointer"`:"";
-      const linkTag=p.link?'<div class="psub link">Tap to buy →</div>':"";
-      const cheapTag=il?'<div class="psub low">Cheapest found</div>':"";
-      return`<div class="prow ${il?"lowest":""}" ${click}><div><div class="pstore">${il?"🏆 ":""}${p.source}</div>${cheapTag}${linkTag}</div><div class="pright">${sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div></div>`;
+      const searchUrl=`https://www.google.com/search?tbm=shop&q=${encodeURIComponent(state.item)}+${encodeURIComponent(p.source)}`;
+      const buyUrl=p.link||searchUrl;
+      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')" style="cursor:pointer">
+        <div>
+          <div class="pstore">${il?"🏆 ":""}${p.source}</div>
+          ${il?'<div class="psub low">Cheapest found</div>':""}
+          <div class="psub link">Tap to buy →</div>
+        </div>
+        <div class="pright">${sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div>
+      </div>`;
     }).join("");
     priceRows=`<div class="ptable"><div class="phdr"><span class="phdrt">Live Prices Across Stores</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
   }
