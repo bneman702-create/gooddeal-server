@@ -22,30 +22,33 @@ app.get("/prices", async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json([]);
   try {
-    const url = `https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(q)}&api_key=${SERP_KEY}&num=10&gl=us&hl=en`;
-    const r = await fetch(url);
-    const data = await r.json();
-    const results = await Promise.all(
-      (data.shopping_results || []).slice(0, 8).map(async (item) => {
-        let directLink = null;
-        if (item.product_link) {
-          try {
-            const pd = await fetch(`https://serpapi.com/search.json?engine=google_product&product_id=${encodeURIComponent(item.product_link)}&api_key=${SERP_KEY}`);
-            const pdData = await pd.json();
-            const sellers = pdData.sellers_results?.online_sellers || [];
-            if (sellers.length > 0) directLink = sellers[0].link;
-          } catch (e) {}
-        }
-        return {
-          title: item.title || "",
-          price: item.price || "",
-          source: item.source || "",
-          link: directLink || item.link || null,
-        };
-      })
-    );
+    const [shopRes, amzRes] = await Promise.all([
+      fetch(`https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(q)}&api_key=${SERP_KEY}&num=10&gl=us&hl=en`),
+      fetch(`https://serpapi.com/search.json?engine=amazon&k=${encodeURIComponent(q)}&api_key=${SERP_KEY}`)
+    ]);
+    const shopData = await shopRes.json();
+    const amzData = await amzRes.json();
+
+    const results = (shopData.shopping_results || []).filter(r => r.price).slice(0, 6).map(item => ({
+      title: item.title || "",
+      price: item.price || "",
+      source: item.source || "",
+      link: item.link || null,
+    }));
+
+    const amzResult = (amzData.organic_results || [])[0];
+    if (amzResult) {
+      results.unshift({
+        title: amzResult.title || "",
+        price: amzResult.price?.current_price ? `$${amzResult.price.current_price}` : amzResult.price_string || "",
+        source: "Amazon",
+        link: amzResult.url ? `https://www.amazon.com${amzResult.url}` : "https://www.amazon.com/s?k=" + encodeURIComponent(q),
+      });
+    }
+
     res.json(results.filter(r => r.price));
   } catch (e) {
+    console.error(e);
     res.json([]);
   }
 });
