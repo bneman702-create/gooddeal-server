@@ -51,8 +51,9 @@ input::placeholder{color:#2A2A42}
 .phdrt{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase}
 .live{display:flex;align-items:center;gap:5px;font-size:11px;color:#22C55E;font-weight:600}
 .livedot{width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
-.prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center}
-.prow.user{background:#1A0808}
+.prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.prow:active{opacity:0.7}
+.prow.user{background:#1A0808;cursor:default}
 .prow.lowest{background:#071A0A}
 .pstore{font-size:14px;font-weight:600}
 .pstore.user{color:#F87171}
@@ -103,6 +104,23 @@ const VERDICT={
   okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E"},
   bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
 };
+const STORE_URLS={
+  "amazon":"https://www.amazon.com/s?k=",
+  "ebay":"https://www.ebay.com/sch/i.html?_nkw=",
+  "walmart":"https://www.walmart.com/search?q=",
+  "target":"https://www.target.com/s?searchTerm=",
+  "best buy":"https://www.bestbuy.com/site/searchpage.jsp?st=",
+  "costco":"https://www.costco.com/CatalogSearch?keyword=",
+  "poshmark":"https://poshmark.com/search?query=",
+  "newegg":"https://www.newegg.com/p/pl?d=",
+  "homedepot":"https://www.homedepot.com/s/",
+  "home depot":"https://www.homedepot.com/s/",
+};
+function getStoreUrl(source,item){
+  const s=source.toLowerCase();
+  const match=Object.keys(STORE_URLS).find(k=>s.includes(k));
+  return match?STORE_URLS[match]+encodeURIComponent(item):"https://www."+s.replace(/[^a-z0-9]/g,"")+".com/search?q="+encodeURIComponent(item);
+}
 let state={screen:"home",item:"",price:"",store:"",loading:false,loadStep:"",result:null,history:[]};
 function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad"}
 function pick(text,label){if(!text)return null;const m=text.match(new RegExp(label+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
@@ -118,7 +136,7 @@ async function analyze(){
     if(Array.isArray(data)&&data.length>0){
       priceList=data.filter(r=>r.price).slice(0,8).map(r=>({
         price:r.price,source:r.source||"Unknown",
-        link:r.link||r.product_link||null,
+        link:r.link||null,
         priceNum:parseFloat(String(r.price).replace(/[^0-9.]/g,""))||999999
       })).sort((a,b)=>a.priceNum-b.priceNum);
       if(priceList.length>0){
@@ -131,10 +149,11 @@ async function analyze(){
   setState({loadStep:"Running AI analysis..."});
   const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
   const ctx=priceList.length>0?`LIVE PRICES:\n${priceList.slice(0,6).map(r=>`- ${r.source}: ${r.price}`).join("\n")}\nLowest: ${lowestPrice} at ${lowestSource}${priceDiff?`\nOverpaying by: ${priceDiff}%`:""}`:"No live data.";
-  const prompt=`You are a brutally honest shopping advisor.\n\nITEM: ${state.item}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY:\n\nSCORE: [0-100]\n\nONE LINE: [punchy honest sentence]\n\nAMAZON PRICE: [price or estimate]\n\nCHEAPEST RIGHT NOW: [cheapest store + price]\n\nPRICE HISTORY: [high/low/average + sale patterns]\n\nWAIT OR BUY: [BUY NOW or WAIT + reason]\n\nBOTTOM LINE: [2 sentences]`;
+  const prompt=`You are a brutally honest shopping advisor.\n\nITEM: ${state.item}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY in this format:\n\nSCORE: [0-100 number only]\n\nONE LINE: [one punchy sentence]\n\nPRICE HISTORY: [is this high, low or average? when does it go on sale?]\n\nWAIT OR BUY: [start with BUY NOW or WAIT then explain why]\n\nBOTTOM LINE: [2 sentences, exactly what to do]`;
   try{
     const r=await fetch(`${SERVER}/analyze`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
-    const d=await r.json();const text=d.text||"";
+    const d=await r.json();
+    const text=d.text||"";
     const sm=text.match(/SCORE:\s*(\d+)/i);
     const score=sm?Math.min(100,Math.max(0,parseInt(sm[1]))):50;
     const nr={item:state.item,price:state.price,store:state.store,verdictKey:scoreToVerdict(score),score,text,priceList,lowestPrice,lowestSource,priceDiff,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
@@ -163,9 +182,8 @@ function renderResult(){
     const rows=pl.slice(0,6).map((p,i)=>{
       const il=i===0;
       const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
-      const searchUrl=`https://www.google.com/search?tbm=shop&q=${encodeURIComponent(state.item)}+${encodeURIComponent(p.source)}`;
-      const buyUrl=p.link||searchUrl;
-      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')" style="cursor:pointer">
+      const buyUrl=getStoreUrl(p.source,r.item);
+      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')">
         <div>
           <div class="pstore">${il?"🏆 ":""}${p.source}</div>
           ${il?'<div class="psub low">Cheapest found</div>':""}
