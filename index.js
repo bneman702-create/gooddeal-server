@@ -3,7 +3,6 @@ const fetch = require("node-fetch");
 const app = express();
 
 app.use(express.json());
-
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -26,13 +25,26 @@ app.get("/prices", async (req, res) => {
     const url = `https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(q)}&api_key=${SERP_KEY}&num=10&gl=us&hl=en`;
     const r = await fetch(url);
     const data = await r.json();
-    const results = (data.shopping_results || []).map(item => ({
-      title: item.title || "",
-      price: item.price || "",
-      source: item.source || "",
-      link: item.link || "",
-    }));
-    res.json(results);
+    const results = await Promise.all(
+      (data.shopping_results || []).slice(0, 8).map(async (item) => {
+        let directLink = null;
+        if (item.product_link) {
+          try {
+            const pd = await fetch(`https://serpapi.com/search.json?engine=google_product&product_id=${encodeURIComponent(item.product_link)}&api_key=${SERP_KEY}`);
+            const pdData = await pd.json();
+            const sellers = pdData.sellers_results?.online_sellers || [];
+            if (sellers.length > 0) directLink = sellers[0].link;
+          } catch (e) {}
+        }
+        return {
+          title: item.title || "",
+          price: item.price || "",
+          source: item.source || "",
+          link: directLink || item.link || null,
+        };
+      })
+    );
+    res.json(results.filter(r => r.price));
   } catch (e) {
     res.json([]);
   }
