@@ -108,6 +108,15 @@ input::placeholder{color:#2A2A42}
 .pagesec{padding:20px 18px 12px}
 .pagetitle{font-size:22px;font-weight:900}
 .pagesub{font-size:13px;color:#52526E;margin-top:4px}
+.acwrap{position:relative}
+.acdrop{position:absolute;top:100%;left:0;right:0;background:#0F0F15;border:1px solid #1C1C28;border-top:none;border-radius:0 0 10px 10px;z-index:20;overflow:hidden}
+.acitem{padding:10px 14px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;color:#C0C0E0}
+.acitem:active{background:#1A1A2E}
+.acsub{font-size:11px;color:#52526E;margin-left:auto}
+@keyframes barfill{from{width:0}to{width:var(--bar-w)}}
+.barf{animation:barfill 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fadecard{animation:fadein 0.35s ease forwards}
 </style>
 </head>
 <body>
@@ -254,7 +263,12 @@ const VERDICT={
   bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
 };
 
-let state={screen:"home",item:"",price:"",store:"",size:"",loading:false,loadStep:"",result:null,history:[],categoryId:"all"};
+function loadHistory(){try{return JSON.parse(localStorage.getItem("gd_history")||"[]")}catch{return[]}}
+function saveHistory(h){try{localStorage.setItem("gd_history",JSON.stringify(h.slice(0,20)))}catch{}}
+function loadCat(){try{return localStorage.getItem("gd_cat")||"all"}catch{return"all"}}
+function saveCat(id){try{localStorage.setItem("gd_cat",id)}catch{}}
+
+let state={screen:"home",item:"",price:"",store:"",size:"",loading:false,loadStep:"",result:null,history:loadHistory(),categoryId:loadCat()};
 
 const CATS=CATEGORIES.filter(c=>c.id);
 function getCat(){return CATS.find(c=>c.id===state.categoryId)||CATS[0]}
@@ -264,7 +278,7 @@ function setState(u){Object.assign(state,u);render()}
 
 function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open")}
 function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open")}
-function selectCategory(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";closeSidebar();render()}
+function selectCategory(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";saveCat(id);closeSidebar();render()}
 
 function buildSidebar(){
   const list=document.getElementById("cat-list");if(!list)return;
@@ -296,7 +310,7 @@ async function analyze(){
   const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
   const ctx=priceList.length>0?`LIVE PRICES:\n${priceList.slice(0,6).map(r=>`- ${r.source}: ${r.price}`).join("\n")}\nLowest: ${lowestPrice} at ${lowestSource}${priceDiff?`\nOverpaying by: ${priceDiff}%`:""}`:"No live data.";
   const isAuthenticity=["sneakers","clothing","bags","jewelry","watches","sunglasses"].includes(cat.id);
-  const prompt=`You are a brutally honest shopping advisor.\n\nCATEGORY: ${cat.icon} ${cat.name}\nITEM: ${state.item}${state.size?` (Size: ${state.size})`:""}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY:\n\nSCORE: [0-100]\n\nONE LINE: [punchy honest sentence]\n\nPRICE HISTORY: [is this high/low/average? when does it go on sale?]\n${isAuthenticity?"AUTHENTICITY: [is this price suspicious for this brand? could it be fake or counterfeit?]\n":""}\nWAIT OR BUY: [BUY NOW or WAIT + specific reason]\n\nBOTTOM LINE: [2 sentences, what to do]`;
+  const prompt=`CATEGORY: ${cat.icon} ${cat.name}\nITEM: ${state.item}${state.size?` (Size: ${state.size})`:""}\nPRICE: ${state.price}\nSTORE: ${state.store||"not specified"}\n\n${ctx}\n\nRespond EXACTLY in this format (no extra text):\n\nSCORE: [0-100]\n\nONE LINE: [one punchy honest sentence, max 12 words]\n\nPRICE HISTORY: [2-3 sentences: typical price range, when it goes on sale, if this is high/low/average]\n${isAuthenticity?"AUTHENTICITY: [1-2 sentences: is this price suspicious for this brand? red flags for fakes?]\n":""}\nCOUPON TIPS: [specific coupon codes, cashback apps, or discount tricks that work for this item/store. Be specific, not generic.]\n\nALTERNATIVES: [2-3 specific cheaper or better alternatives with approximate prices]\n\nWAIT OR BUY: [Start with BUY NOW or WAIT — give a specific concrete reason]\n\nBOTTOM LINE: [2 sentences max, direct action advice]`;
   try{
     const r=await fetch(`${SERVER}/analyze`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
     const d=await r.json();const text=d.text||"";
@@ -304,13 +318,13 @@ async function analyze(){
     const score=sm?Math.min(100,Math.max(0,parseInt(sm[1]))):50;
     const scamWarn=checkScam(state.item,state.price);
     const nr={item:state.item,price:state.price,store:state.store,size:state.size,categoryId:state.categoryId,verdictKey:scoreToVerdict(score),score,text,priceList,lowestPrice,lowestSource,priceDiff,scamWarn,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
-    state.history=[nr,...state.history.slice(0,9)];setState({loading:false,result:nr});
+    state.history=[nr,...state.history.slice(0,19)];saveHistory(state.history);setState({loading:false,result:nr});
   }catch(e){
     const lN=priceList[0]?.priceNum||uN;
     const as=Math.max(0,Math.min(100,Math.round(100-((uN-lN)/Math.max(uN,1))*150)));
     const scamWarn=checkScam(state.item,state.price);
     const nr={item:state.item,price:state.price,store:state.store,size:state.size,categoryId:state.categoryId,verdictKey:scoreToVerdict(as),score:as,text:"",priceList,lowestPrice,lowestSource,priceDiff,scamWarn,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
-    state.history=[nr,...state.history.slice(0,9)];setState({loading:false,result:nr});
+    state.history=[nr,...state.history.slice(0,19)];saveHistory(state.history);setState({loading:false,result:nr});
   }
 }
 
@@ -319,38 +333,44 @@ function renderResult(){
   const v=r.verdictKey;const vd=VERDICT[v];const sc=r.score;const tx=r.text;
   const oneLine=pick(tx,"ONE LINE");const hist=pick(tx,"PRICE HISTORY");
   const auth=pick(tx,"AUTHENTICITY");const wob=pick(tx,"WAIT OR BUY");const bottom=pick(tx,"BOTTOM LINE");
+  const coupons=pick(tx,"COUPON TIPS");const alts=pick(tx,"ALTERNATIVES");
   const isWait=wob?.toLowerCase().startsWith("wait");
-  const pl=r.priceList||[];const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
+  const pl=r.priceList||[];const uN=parseFloat((r.price||"").replace(/[^0-9.]/g,""))||0;
   const cat=CATS.find(c=>c.id===r.categoryId)||CATS[0];
-  if(state.loading)return`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`;
+  if(state.loading)return`<div class="lwrap"><div class="spin"></div><div class="litem">${r.item||state.item}</div><div class="lstep">${state.loadStep}</div></div>`;
+  // Deduplicate price list by source
+  const seen=new Set();
+  const deduped=pl.filter(p=>{const k=p.source.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
   let priceRows="";
-  if(pl.length>0){
+  if(deduped.length>0){
     const ur=`<div class="prow user"><div><div class="pstore user">📍 ${r.store||"Your Store"}</div><div class="psub red">Where you're standing</div></div><span class="price user">${r.price}</span></div>`;
-    const rows=pl.slice(0,6).map((p,i)=>{
+    const rows=deduped.slice(0,7).map((p,i)=>{
       const il=i===0;const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
       const isSus=uN>0&&p.priceNum<uN*0.3&&uN>50;
-      const buyUrl=getStoreUrl(p.source,r.item+(r.size?` ${r.size}`:""));
+      const buyUrl=p.link||getStoreUrl(p.source,r.item+(r.size?` ${r.size}`:""));
       return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')"><div><div class="pstore">${il?"🏆 ":""}${p.source}</div>${il?'<div class="psub low">Cheapest found</div>':""}${isSus?'<div class="psub red">⚠️ Verify authenticity</div>':'<div class="psub link">Tap to buy →</div>'}</div><div class="pright">${isSus?'<span class="fakebadge">⚠️</span>':sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div></div>`;
     }).join("");
-    priceRows=`<div class="ptable"><div class="phdr"><span class="phdrt">${cat.icon} Live Prices</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
+    priceRows=`<div class="ptable fadecard"><div class="phdr"><span class="phdrt">${cat.icon} Live Prices</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
   }
   return`
-    <div class="banner" style="background:${vd.bg};border:1px solid ${vd.border}">
+    <div class="banner fadecard" style="background:${vd.bg};border:1px solid ${vd.border}">
       <div class="scorerow" style="color:${vd.color}">${cat.icon} ${cat.name} · Score: ${sc}/100</div>
       <span class="bige">${vd.emoji}</span>
       <div class="vlabel" style="color:${vd.color}">${vd.label}</div>
       <div class="vitem">${r.item}${r.size?` · ${r.size}`:""} · ${r.price}${r.store?` at ${r.store}`:""}</div>
-      <div class="barw"><div class="barf" style="width:${sc}%;background:${vd.color}"></div></div>
+      <div class="barw"><div class="barf" style="--bar-w:${sc}%;background:${vd.color}"></div></div>
       ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="savemsg">💰 Save ${r.priceDiff}% buying elsewhere</div>`:""}
       ${r.scamWarn?`<div class="warn">${r.scamWarn}</div>`:""}
     </div>
-    ${oneLine?`<div class="sec"><div class="sect">The Verdict</div><p class="secp" style="font-style:italic;color:#C0C0E0;font-size:16px">"${oneLine}"</p></div>`:""}
+    ${oneLine?`<div class="sec fadecard"><div class="sect">The Verdict</div><p class="secp" style="font-style:italic;color:#C0C0E0;font-size:16px">"${oneLine}"</p></div>`:""}
     ${priceRows}
-    ${auth?`<div class="sec" style="border-color:#854D0E"><div class="sect">🔍 Authenticity</div><p class="secp">${auth}</p></div>`:""}
-    ${hist?`<div class="sec"><div class="sect">📈 Price History</div><p class="secp">${hist}</p></div>`:""}
-    ${wob?`<div class="wob ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait":"Buy Now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
-    ${bottom?`<div class="sec" style="border:1px solid ${vd.border}"><div class="sect">Bottom Line</div><p class="secp">${bottom}</p></div>`:""}
-    <div class="actrow"><button class="newbtn" onclick="doReset()">Check Another</button><button class="shrbtn" onclick="doShare()">📋 Share</button></div>`;
+    ${auth?`<div class="sec fadecard" style="border-color:#854D0E"><div class="sect">🔍 Authenticity</div><p class="secp">${auth}</p></div>`:""}
+    ${hist?`<div class="sec fadecard"><div class="sect">📈 Price History</div><p class="secp">${hist}</p></div>`:""}
+    ${coupons?`<div class="sec fadecard" style="border-color:#1E3A5F"><div class="sect">🏷️ Coupon Tips</div><p class="secp">${coupons}</p></div>`:""}
+    ${alts?`<div class="sec fadecard" style="border-color:#2D1B4E"><div class="sect">💡 Alternatives</div><p class="secp">${alts}</p></div>`:""}
+    ${wob?`<div class="wob fadecard ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait":"Buy Now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
+    ${bottom?`<div class="sec fadecard" style="border:1px solid ${vd.border}"><div class="sect">Bottom Line</div><p class="secp">${bottom}</p></div>`:""}
+    <div class="actrow fadecard"><button class="newbtn" onclick="doReset()">Check Another</button><button class="shrbtn" onclick="doShare()">📋 Share</button></div>`;
 }
 
 function render(){
@@ -359,13 +379,17 @@ function render(){
   const needsSize=["sneakers","clothing","bags","kids_clothing"].includes(cat.id);
   let body="";
   if(state.screen==="home"){
+    const recentItems=[...new Set(state.history.map(h=>h.item))].slice(0,5);
+    const acHtml=state.item&&recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item).length>0
+      ?`<div class="acdrop">${recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item).map(i=>`<div class="acitem" onclick="state.item='${i.replace(/'/g,"\\'")}';document.getElementById('ii').value='${i.replace(/'/g,"\\'")}';hideAc();upd()">🕐 ${i}<span class="acsub">recent</span></div>`).join("")}</div>`
+      :"";
     body=`<div class="hero"><div class="cat-badge">${cat.icon} ${cat.name}</div><h1>Is this a<br>good deal?</h1><p class="sub">Live prices · Scam detection · AI verdict</p></div>
     <div class="form">
       <label class="lbl" style="margin-top:0">What is it?</label>
-      <input type="text" id="ii" placeholder="e.g. ${cat.examples[0]?.label||"Item name"}" value="${state.item}" oninput="state.item=this.value;upd()">
+      <div class="acwrap"><input type="text" id="ii" placeholder="e.g. ${cat.examples[0]?.label||"Item name"}" value="${state.item}" oninput="state.item=this.value;upd();render()" autocomplete="off">${acHtml}</div>
       ${needsSize?`<label class="lbl">Size (optional)</label><input type="text" placeholder="${cat.id==="sneakers"?"e.g. 10.5 Men's":"e.g. Large / 32x30"}" value="${state.size}" oninput="state.size=this.value">`:""}
       <label class="lbl">Price you see</label>
-      <input type="text" id="ip" placeholder="$99" value="${state.price}" oninput="state.price=this.value;upd()">
+      <input type="text" id="ip" inputmode="decimal" placeholder="$99" value="${state.price}" oninput="state.price=this.value;upd()">
       <label class="lbl">Store (optional)</label>
       <input type="text" placeholder="Where are you shopping?" value="${state.store}" oninput="state.store=this.value">
       <button id="gb" class="${state.item&&state.price?"gobtn on":"gobtn off"}" onclick="if(state.item&&state.price)analyze()">${state.item&&state.price?"Check the deal →":"Enter item + price above"}</button>
@@ -375,7 +399,7 @@ function render(){
   }else if(state.screen==="result"){
     body=state.loading?`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`:renderResult();
   }else if(state.screen==="history"){
-    body=`<div class="pagesec"><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>{const hcat=CATS.find(c=>c.id===h.categoryId)||CATS[0];return`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${hcat.icon} ${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`;}).join(""));
+    body=`<div class="pagesec" style="display:flex;align-items:flex-start;justify-content:space-between"><div><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>${hc>0?`<button onclick="clearHistory()" style="background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px">Clear</button>`:""}</div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>{const hcat=CATS.find(c=>c.id===h.categoryId)||CATS[0];return`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${hcat.icon} ${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`;}).join(""));
   }
   document.getElementById("app").innerHTML=`<div class="hdr"><div class="hdr-left"><button class="menubtn" onclick="openSidebar()">☰</button><div class="logo"><span>🔍</span><span>GoodDeal?</span></div></div>${hdrR}</div><div class="body">${body}</div>`;
   buildSidebar();
@@ -385,7 +409,18 @@ function fillEx(i){const e=getCat().examples[i];state.item=e.label;state.price=e
 function doReset(){setState({screen:"home",result:null})}
 function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;state.size=h.size||"";state.categoryId=h.categoryId||"all";setState({screen:"result",result:h})}
 function upd(){const b=document.getElementById("gb");if(!b)return;const on=state.item&&state.price;b.className=on?"gobtn on":"gobtn off";b.textContent=on?"Check the deal →":"Enter item + price above"}
-function doShare(){const r=state.result;if(!r)return;const vd=VERDICT[r.verdictKey];const ol=pick(r.text,"ONE LINE");const ch=r.priceList?.[0]?`\nCheapest: ${r.priceList[0].source} at ${r.priceList[0].price}`:"";const t=`${vd.emoji} ${r.item} for ${r.price} — ${vd.label} (${r.score}/100)${ch}\n\n"${ol||""}"\n\nChecked with GoodDeal?`;navigator.clipboard?.writeText(t).then(()=>alert("Copied!")).catch(()=>alert(t))}
+function hideAc(){setTimeout(()=>{const d=document.querySelector(".acdrop");if(d)d.remove()},150)}
+function clearHistory(){state.history=[];saveHistory([]);render()}
+function doShare(){
+  const r=state.result;if(!r)return;
+  const vd=VERDICT[r.verdictKey];
+  const ol=pick(r.text,"ONE LINE");
+  const ch=r.priceList?.[0]?`\nCheapest: ${r.priceList[0].source} at ${r.priceList[0].price}`:"";
+  const coupons=pick(r.text,"COUPON TIPS");
+  const t=`${vd.emoji} ${r.item} for ${r.price} — ${vd.label} (${r.score}/100)${ch}${ol?`\n\n"${ol}"`:""}${coupons?`\n\nCoupon tip: ${coupons.split(".")[0]}.`:""}\n\nChecked with GoodDeal?`;
+  if(navigator.share){navigator.share({text:t}).catch(()=>{})}
+  else navigator.clipboard?.writeText(t).then(()=>alert("Copied to clipboard!")).catch(()=>alert(t));
+}
 render();
 </script>
 </body>
