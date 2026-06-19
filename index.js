@@ -16,7 +16,6 @@ app.use((req, res, next) => {
 const SERP_KEY = process.env.SERP_KEY;
 const CLAUDE_KEY = process.env.CLAUDE_KEY;
 
-// In-memory cache with 15-min TTL
 const cache = new Map();
 const CACHE_TTL = 15 * 60 * 1000;
 function getCache(key) {
@@ -30,8 +29,35 @@ function setCache(key, data) {
   cache.set(key, { data, ts: Date.now() });
 }
 
+// Score how well a result title matches the search query (0-1)
+function matchScore(title, query) {
+  if (!title || !query) return 0;
+  const t = title.toLowerCase();
+  const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+  const matches = words.filter(w => t.includes(w)).length;
+  return matches / Math.max(words.length, 1);
+}
+
+// Extract ASIN from Amazon URL
+function extractAsin(url) {
+  if (!url) return null;
+  const m = url.match(/\/dp\/([A-Z0-9]{10})/i) || url.match(/\/gp\/product\/([A-Z0-9]{10})/i);
+  return m ? m[1] : null;
+}
+
+// Build Amazon add-to-cart URL from ASIN
+function amazonCartUrl(asin) {
+  return `https://www.amazon.com/gp/aws/cart/add.html?ASIN.1=${asin}&Quantity.1=1`;
+}
+
+// Build eBay buy-it-now URL
+function ebayBuyUrl(itemId) {
+  if (!itemId) return null;
+  return `https://www.ebay.com/itm/${itemId}`;
+}
+
 app.get("/", (req, res) => {
-  const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
+  const acceptsHtml = req.headers.accept && req.headers.accept.includes("text/html");
   if (acceptsHtml) {
     res.sendFile(path.join(__dirname, "index.html"));
   } else {
@@ -49,51 +75,94 @@ app.get("/prices", async (req, res) => {
 
   try {
     const [shopRes, amzRes, ebayRes] = await Promise.allSettled([
-      fetch(`https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(q)}&api_key=${SERP_KEY}&num=10&gl=us&hl=en`),
-      fetch(`https://serpapi.com/search.json?engine=amazon&k=${encodeURIComponent(q)}&api_key=${SERP_KEY}`),
-      fetch(`https://serpapi.com/search.json?engine=ebay&_nkw=${encodeURIComponent(q)}&api_key=${SERP_KEY}`),
+      fetch(`https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(q)}&api_key=${SERP_KEY}&num=20&gl=us&hl=en`),
+      fetch(`https://serpapi.com/search.json?engine=amazon&k=${encodeURIComponent(q)}&api_key=${SERP_KEY}&amazon_domain=amazon.com`),
+      fetch(`https://serpapi.com/search.json?engine=ebay&_nkw=${encodeURIComponent(q)}&api_key=${SERP_KEY}&ebay_domain=ebay.com&LH_BIN=1`),
     ]);
 
     const results = [];
 
+    // Amazon — pick best matching result, build add-to-cart link
+    if (amzRes.status === "fulfilled") {
+      const amzData = await amzRes.value.json();
+      const amzItems = (amzData.organic_results || [])
+        .filter(r => r.title && (r.price?.current_price || r.price_string))
+        .map(r => ({ ...r, score: matchScore(r.title, q) }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      for (const item of amzItems) {
+        const priceStr = item.price?.current_price ? `$${item.price.current_price}` : item.price_string || "";
+        const asin = item.asin || extractAsin(item.url) || extractAsin(item.link);
+        const link = asin
+          ? amazonCartUrl(asin)
+          : item.url ? `https://www.amazon.com${item.url}` : `https://www.amazon.com/s?k=${encodeURIComponent(q)}`;
+        if (priceStr) {
+          results.push({
+            title: item.title || "",
+            price: priceStr,
+            source: "Amazon",
+            link,
+            addToCart: !!asin,
+          });
+        }
+      }
+    }
+
+    // Google Shopping — filter by relevance, get direct product links
     if (shopRes.status === "fulfilled") {
       const shopData = await shopRes.value.json();
-      const shopItems = (shopData.shopping_results || []).filter(r => r.price).slice(0, 6).map(item => ({
-        title: item.title || "",
-        price: item.price || "",
-        source: item.source || "",
-        link: item.link || null,
-      }));
+      const shopItems = (shopData.shopping_results || [])
+        .filter(r => r.price && r.title)
+        .map(r => ({ ...r, score: matchScore(r.title, q) }))
+        .filter(r => r.score >= 0.3)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 6)
+        .map(item => ({
+          title: item.title || "",
+          price: item.price || "",
+          source: item.source || "",
+          link: item.link || null,
+          addToCart: false,
+        }));
       results.push(...shopItems);
     }
 
-    if (amzRes.status === "fulfilled") {
-      const amzData = await amzRes.value.json();
-      const amzResult = (amzData.organic_results || [])[0];
-      if (amzResult) {
-        results.unshift({
-          title: amzResult.title || "",
-          price: amzResult.price?.current_price ? `$${amzResult.price.current_price}` : amzResult.price_string || "",
-          source: "Amazon",
-          link: amzResult.url ? `https://www.amazon.com${amzResult.url}` : "https://www.amazon.com/s?k=" + encodeURIComponent(q),
-        });
-      }
-    }
-
+    // eBay — Buy It Now only, best match, direct listing link
     if (ebayRes.status === "fulfilled") {
       const ebayData = await ebayRes.value.json();
-      const ebayResult = (ebayData.organic_results || []).find(r => r.price?.current?.raw);
-      if (ebayResult) {
-        results.push({
-          title: ebayResult.title || "",
-          price: ebayResult.price?.current?.raw || "",
-          source: "eBay",
-          link: ebayResult.link || "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(q),
+      const ebayItems = (ebayData.organic_results || [])
+        .filter(r => r.price?.current?.raw && r.title)
+        .map(r => ({ ...r, score: matchScore(r.title, q) }))
+        .filter(r => r.score >= 0.25)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 2)
+        .map(item => {
+          const itemId = item.item_id || item.id;
+          const link = ebayBuyUrl(itemId) || item.link || `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(q)}&LH_BIN=1`;
+          return {
+            title: item.title || "",
+            price: item.price?.current?.raw || "",
+            source: "eBay",
+            link,
+            addToCart: false,
+          };
         });
+      results.push(...ebayItems);
+    }
+
+    // Deduplicate by source, keep highest match score per source
+    const seen = new Map();
+    const deduped = [];
+    for (const r of results) {
+      const key = r.source.toLowerCase();
+      if (!seen.has(key)) {
+        seen.set(key, true);
+        deduped.push(r);
       }
     }
 
-    const final = results.filter(r => r.price);
+    const final = deduped.filter(r => r.price);
     setCache(cacheKey, final);
     res.json(final);
   } catch (e) {

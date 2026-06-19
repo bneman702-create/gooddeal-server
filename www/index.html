@@ -467,7 +467,8 @@ function renderResult(){
       const sv=uN&&p.priceNum&&uN>p.priceNum?`SAVE $${(uN-p.priceNum).toFixed(0)}`:null;
       const isSus=uN>0&&p.priceNum<uN*0.3&&uN>50;
       const buyUrl=p.link||getStoreUrl(p.source,r.item);
-      return`<div class="price-row ${isLowest?"best":""}" onclick="window.open('${jsStr(buyUrl)}','_blank')">${storeAvatar(p.source)}<div class="pr-info"><div class="pr-name">${esc(p.source)}</div>${isLowest?'<div class="pr-sub green">Cheapest found</div>':'<div class="pr-sub">Tap to open &#x2192;</div>'}</div><div class="pr-right">${isSus?'<span class="badge warn">CHECK</span>':isLowest?'<span class="badge best">BEST</span>':sv?`<span class="badge save">${sv}</span>`:""}<span class="pr-price ${isLowest?"green":""}">${esc(p.price)}</span></div></div>`;
+      const ctaLabel=p.addToCart?'🛒 Add to Cart &#x2192;':isLowest?'Cheapest — Buy Now &#x2192;':'Tap to buy &#x2192;';
+      return`<div class="price-row ${isLowest?"best":""}" onclick="window.open('${jsStr(buyUrl)}','_blank')">${storeAvatar(p.source)}<div class="pr-info"><div class="pr-name">${esc(p.source)}</div><div class="pr-sub ${isLowest?"green":""}">${ctaLabel}</div></div><div class="pr-right">${isSus?'<span class="badge warn">CHECK</span>':isLowest?'<span class="badge best">BEST</span>':sv?`<span class="badge save">${sv}</span>`:""}<span class="pr-price ${isLowest?"green":""}">${esc(p.price)}</span></div></div>`;
     }).join("");
     priceTableHtml=`<div class="sec-title">Live Prices</div><div class="card fade-in">${userRow}${rows}</div>`;
   }
