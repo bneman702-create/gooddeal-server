@@ -2,121 +2,208 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>GoodDeal? — Is this a good deal?</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GoodDeal?">
+<meta name="theme-color" content="#6366F1">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#08080B;color:#F0F0F6;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
-#app{width:100%;max-width:430px;display:flex;flex-direction:column;min-height:100vh;position:relative}
-.hdr{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1C1C28;position:sticky;top:0;background:#08080B;z-index:50}
-.hdr-left{display:flex;align-items:center;gap:12px}
-.menubtn{background:none;border:none;color:#F0F0F6;font-size:22px;cursor:pointer;padding:4px;line-height:1}
-.logo{font-size:18px;font-weight:900;display:flex;align-items:center;gap:7px}
-.hbtn{background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:none}
-.overlay.open{display:block}
-.sidebar{position:fixed;top:0;left:-300px;width:300px;height:100vh;background:#0F0F15;border-right:1px solid #1C1C28;z-index:101;transition:left 0.25s ease;overflow-y:auto;padding-bottom:60px}
-.sidebar.open{left:0}
-.sidebar-hdr{padding:20px 18px 16px;border-bottom:1px solid #1C1C28;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#0F0F15}
-.sidebar-title{font-size:17px;font-weight:800}
-.closebtn{background:none;border:none;color:#52526E;font-size:24px;cursor:pointer}
-.cat-section-label{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;padding:16px 18px 6px}
-.cat-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;transition:background 0.15s}
-.cat-item:active,.cat-item.active{background:#1A1A2E}
-.cat-item.active{border-right:3px solid #6366F1}
-.cat-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
-.cat-name{font-size:14px;font-weight:600}
-.cat-name.active{color:#6366F1}
-.body{flex:1;padding-bottom:48px;overflow-y:auto}
-.hero{padding:24px 20px 0;text-align:center}
-.cat-badge{display:inline-flex;align-items:center;gap:6px;background:#14143A;border:1px solid rgba(99,102,241,0.27);color:#6366F1;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;margin-bottom:14px}
-h1{font-size:32px;font-weight:900;line-height:1.1;letter-spacing:-1.2px;margin-bottom:8px}
-.sub{font-size:13px;color:#52526E;line-height:1.5}
-.form{margin:18px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:18px;padding:18px 16px}
-.lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;display:block;margin-top:12px}
-.lbl:first-child{margin-top:0}
-input{width:100%;background:#08080B;border:1px solid #1C1C28;border-radius:10px;padding:12px 14px;color:#F0F0F6;font-size:15px;font-family:inherit;outline:none;margin-top:5px}
-input:focus{border-color:#6366F1}
-input::placeholder{color:#2A2A42}
-.gobtn{width:100%;border:none;border-radius:12px;padding:15px 0;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px}
-.gobtn.on{background:#6366F1;color:#fff}
-.gobtn.off{background:#14143A;color:#52526E;cursor:default}
-.tips{margin:12px 16px 0;display:flex;gap:8px;flex-wrap:wrap}
-.tip{background:#0F0F15;border:1px solid #1C1C28;border-radius:999px;padding:5px 12px;font-size:11px;color:#8A8AAA;cursor:pointer}
-.tip:active{background:#1A1A2E;color:#F0F0F6}
-.exwrap{margin:14px 16px 0}
-.exlbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
-.exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.exchip{background:#0F0F15;border:1px solid #1C1C28;border-radius:12px;padding:10px 12px;cursor:pointer}
-.exname{font-size:13px;font-weight:700;margin-bottom:2px}
-.exmeta{font-size:11px;color:#52526E}
-.lwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:0 24px}
-.spin{width:44px;height:44px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.litem{font-size:20px;font-weight:900;text-align:center}
-.lstep{font-size:13px;color:#52526E;text-align:center}
-.banner{margin:18px 16px 0;border-radius:18px;padding:22px 18px 18px}
-.scorerow{text-align:center;font-size:12px;font-weight:700;margin-bottom:8px}
-.bige{font-size:48px;display:block;text-align:center;margin-bottom:8px}
-.vlabel{font-size:26px;font-weight:900;text-align:center;margin-bottom:4px;letter-spacing:-0.8px}
-.vitem{font-size:13px;color:#52526E;text-align:center}
-.barw{margin:14px 0 0;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
-.barf{height:100%;border-radius:999px}
-.savemsg{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#22C55E}
-.warn{text-align:center;margin-top:10px;font-size:12px;font-weight:700;color:#F87171;line-height:1.4}
-.sec{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:15px 16px}
-.sect{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
-.secp{font-size:15px;line-height:1.55;margin:0}
-.ptable{margin:10px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;overflow:hidden}
-.phdr{padding:10px 16px;background:#12122A;display:flex;justify-content:space-between;align-items:center}
-.phdrt{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1.2px;text-transform:uppercase}
-.live{display:flex;align-items:center;gap:5px;font-size:11px;color:#22C55E;font-weight:600}
-.livedot{width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
-.prow{padding:11px 16px;border-top:1px solid #1C1C28;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.prow:active{opacity:0.7}
-.prow.user{background:#1A0808;cursor:default}
-.prow.lowest{background:#071A0A}
-.pstore{font-size:14px;font-weight:600}
-.pstore.user{color:#F87171}
-.psub{font-size:11px;margin-top:2px}
-.psub.red{color:#F87171}
-.psub.low{color:#22C55E}
-.psub.link{color:#6366F1}
-.pright{display:flex;align-items:center;gap:8px}
-.price{font-size:15px;font-weight:800}
-.price.user{color:#F87171}
-.price.lowest{color:#22C55E}
-.savebadge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
-.fakebadge{background:#3A0A0A;color:#F87171;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:700}
-.wob{margin:10px 16px 0;border-radius:14px;padding:15px 16px;display:flex;align-items:flex-start;gap:12px}
-.wob.wait{background:#120E00;border:1px solid #854D0E}
-.wob.buy{background:#021208;border:1px solid #14532D}
-.wobicon{font-size:26px;flex-shrink:0}
-.wobtitle{font-size:13px;font-weight:800;margin-bottom:4px}
-.wobtitle.wait{color:#FACC15}
-.wobtitle.buy{color:#22C55E}
-.wobtext{font-size:14px;line-height:1.5}
-.actrow{display:flex;gap:10px;margin:16px 16px 0}
-.newbtn{flex:1;background:#6366F1;border:none;color:#fff;border-radius:12px;padding:14px 0;font-size:15px;font-weight:800;cursor:pointer}
-.shrbtn{flex:1;background:#0F0F15;border:1px solid #1C1C28;color:#F0F0F6;border-radius:12px;padding:14px 0;font-size:15px;font-weight:700;cursor:pointer}
-.hcard{margin:8px 16px 0;background:#0F0F15;border:1px solid #1C1C28;border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px}
-.hinfo{flex:1}
-.hname{font-size:14px;font-weight:700;margin-bottom:2px}
-.hmeta{font-size:12px;color:#52526E}
-.hverd{font-size:12px;font-weight:700;white-space:nowrap}
-.empty{text-align:center;color:#52526E;margin-top:60px;font-size:15px;line-height:1.7}
-.pagesec{padding:20px 18px 12px}
-.pagetitle{font-size:22px;font-weight:900}
-.pagesub{font-size:13px;color:#52526E;margin-top:4px}
-.acwrap{position:relative}
-.acdrop{position:absolute;top:100%;left:0;right:0;background:#0F0F15;border:1px solid #1C1C28;border-top:none;border-radius:0 0 10px 10px;z-index:20;overflow:hidden}
-.acitem{padding:10px 14px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;color:#C0C0E0}
-.acitem:active{background:#1A1A2E}
-.acsub{font-size:11px;color:#52526E;margin-left:auto}
-@keyframes barfill{from{width:0}to{width:var(--bar-w)}}
-.barf{animation:barfill 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
-@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fadecard{animation:fadein 0.35s ease forwards}
+:root {
+  --bg: #08080B;
+  --bg2: #0F0F18;
+  --bg3: #14141F;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #6366F1;
+  --accent2: #818CF8;
+  --text: #F2F2F8;
+  --text2: #8B8BA8;
+  --text3: #3D3D5C;
+  --green: #22C55E;
+  --red: #F87171;
+  --yellow: #FACC15;
+  --tab-h: 84px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif; overflow: hidden; }
+#app { width: 100%; max-width: 430px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+.scroll-body { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 8px); }
+.scroll-body::-webkit-scrollbar { display: none; }
+
+.topbar { position: relative; z-index: 40; padding: 16px 20px 12px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-bottom: 1px solid var(--border); }
+.topbar-logo { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-ring { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #6366F1, #818CF8); display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 20px rgba(99,102,241,0.4); }
+.topbar-action { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 10px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.topbar-action:active { transform: scale(0.96); }
+.menubtn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; transition: all 0.15s; }
+.menubtn:active { transform: scale(0.93); }
+
+.install-banner { margin: 12px 16px 0; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(129,140,248,0.08)); border: 1px solid rgba(99,102,241,0.3); border-radius: 16px; padding: 13px 16px; display: flex; align-items: center; gap: 12px; }
+.install-icon { font-size: 24px; flex-shrink: 0; }
+.install-text { flex: 1; }
+.install-title { font-size: 13px; font-weight: 700; color: var(--accent2); }
+.install-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.install-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; }
+
+.hero { padding: 28px 20px 0; text-align: center; }
+.cat-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); color: var(--accent2); border-radius: 999px; padding: 6px 16px; font-size: 12px; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.3px; }
+.hero h1 { font-size: 38px; font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 10px; background: linear-gradient(135deg, #fff 60%, #8B8BA8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
+
+.form-card { margin: 20px 16px 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 22px; padding: 20px 18px; }
+.field-label { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 16px; }
+.field-label:first-child { margin-top: 0; }
+.input-wrap { position: relative; }
+input { width: 100%; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 13px; padding: 14px 16px; color: var(--text); font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; }
+input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+input::placeholder { color: var(--text3); }
+.price-input { font-size: 28px; font-weight: 800; letter-spacing: -1px; padding: 16px 20px; border-radius: 16px; }
+.check-btn { width: 100%; border: none; border-radius: 16px; padding: 18px 0; font-size: 17px; font-weight: 800; cursor: pointer; margin-top: 18px; font-family: inherit; letter-spacing: -0.3px; transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.check-btn.on { background: linear-gradient(135deg, #6366F1, #818CF8); color: #fff; box-shadow: 0 8px 30px rgba(99,102,241,0.45); }
+.check-btn.on:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+.check-btn.off { background: var(--bg3); color: var(--text3); cursor: default; }
+
+.chips-row { margin: 14px 16px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.chip:active { transform: scale(0.95); background: var(--bg3); color: var(--text); }
+
+.examples-section { margin: 16px 16px 0; }
+.section-label { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.ex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ex-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 14px; cursor: pointer; transition: all 0.15s; }
+.ex-card:active { transform: scale(0.97); border-color: var(--accent); }
+.ex-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+.ex-meta { font-size: 11px; color: var(--text2); }
+
+.ac-drop { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg2); border: 1px solid var(--border2); border-radius: 14px; z-index: 30; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.ac-item { padding: 12px 16px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text2); border-bottom: 1px solid var(--border); }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:active { background: var(--bg3); }
+.ac-sub { font-size: 11px; color: var(--text3); margin-left: auto; }
+
+.tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; height: var(--tab-h); padding-bottom: var(--safe-bottom); background: rgba(10,10,16,0.88); backdrop-filter: blur(30px) saturate(1.8); -webkit-backdrop-filter: blur(30px) saturate(1.8); border-top: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-around; padding-top: 10px; z-index: 50; }
+.tab-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; padding: 4px 20px; min-width: 72px; font-family: inherit; transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.tab-btn:active { transform: scale(0.88); }
+.tab-icon { font-size: 22px; line-height: 1; }
+.tab-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.2px; }
+.tab-btn.active .tab-label { color: var(--accent2); }
+.tab-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin-top: -2px; opacity: 0; }
+.tab-btn.active .tab-dot { opacity: 1; }
+
+.loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 65vh; gap: 20px; padding: 0 32px; }
+.loading-logo { width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #6366F1, #818CF8); display: flex; align-items: center; justify-content: center; font-size: 32px; animation: pulse-logo 1.4s ease-in-out infinite; box-shadow: 0 0 40px rgba(99,102,241,0.5); }
+@keyframes pulse-logo { 0%,100% { transform: scale(1); box-shadow: 0 0 40px rgba(99,102,241,0.5); } 50% { transform: scale(1.06); box-shadow: 0 0 60px rgba(99,102,241,0.8); } }
+.loading-item { font-size: 20px; font-weight: 800; text-align: center; letter-spacing: -0.5px; }
+.loading-step { font-size: 14px; color: var(--text2); text-align: center; }
+.loading-dots { display: flex; gap: 6px; }
+.loading-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: dot-pulse 1.2s ease-in-out infinite; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot-pulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+.verdict-card { margin: 16px 16px 0; border-radius: 24px; padding: 28px 24px 22px; text-align: center; }
+.vc-cat { font-size: 12px; font-weight: 700; opacity: 0.7; margin-bottom: 16px; letter-spacing: 0.5px; }
+.score-ring-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+.score-ring { position: relative; width: 110px; height: 110px; }
+.score-ring svg { transform: rotate(-90deg); width: 110px; height: 110px; }
+.score-ring-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 9; }
+.score-ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; }
+.score-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-num { font-size: 30px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.score-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 600; letter-spacing: 0.5px; }
+.verdict-emoji { font-size: 32px; margin-bottom: 6px; }
+.verdict-title { font-size: 26px; font-weight: 900; letter-spacing: -0.8px; margin-bottom: 6px; }
+.verdict-meta { font-size: 13px; opacity: 0.65; line-height: 1.4; }
+.verdict-save { margin-top: 14px; display: inline-block; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: var(--green); border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 700; }
+.verdict-warn { margin-top: 12px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); border-radius: 12px; padding: 10px 14px; font-size: 12px; font-weight: 700; color: var(--red); line-height: 1.4; }
+
+.result-sec { margin: 10px 16px 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 18px; }
+.result-sec-title { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.result-sec-body { font-size: 15px; line-height: 1.6; color: var(--text); }
+.one-line-quote { font-size: 17px; font-style: italic; color: #C8C8E8; line-height: 1.4; font-weight: 500; }
+
+.price-table { margin: 10px 16px 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+.price-table-hdr { padding: 13px 18px; background: rgba(99,102,241,0.06); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.price-table-title { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+.live-badge { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); font-weight: 600; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: live-pulse 2s ease-in-out infinite; }
+@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.price-row { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.1s; }
+.price-row:active { background: var(--bg3); }
+.price-row.user-row { background: rgba(248,113,113,0.05); cursor: default; }
+.price-row.lowest-row { background: rgba(34,197,94,0.04); }
+.store-avatar { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; flex-shrink: 0; color: #fff; }
+.price-row-info { flex: 1; min-width: 0; }
+.store-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.store-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.store-sub.green { color: var(--green); }
+.store-sub.red { color: var(--red); }
+.store-sub.accent { color: var(--accent2); }
+.price-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.row-price { font-size: 16px; font-weight: 800; }
+.row-price.green { color: var(--green); }
+.row-price.red { color: var(--red); }
+.save-tag { background: rgba(34,197,94,0.15); color: var(--green); border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+.warn-tag { background: rgba(248,113,113,0.15); color: var(--red); border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+
+.wob-card { margin: 10px 16px 0; border-radius: 18px; padding: 18px; display: flex; align-items: flex-start; gap: 14px; }
+.wob-card.wait-card { background: rgba(250,204,21,0.06); border: 1px solid rgba(250,204,21,0.2); }
+.wob-card.buy-card { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); }
+.wob-icon { font-size: 28px; flex-shrink: 0; line-height: 1; }
+.wob-title { font-size: 14px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+.wob-card.wait-card .wob-title { color: var(--yellow); }
+.wob-card.buy-card .wob-title { color: var(--green); }
+.wob-text { font-size: 14px; line-height: 1.55; }
+
+.action-row { display: flex; gap: 10px; margin: 16px 16px 0; }
+.primary-btn { flex: 1; background: linear-gradient(135deg, #6366F1, #818CF8); border: none; color: #fff; border-radius: 16px; padding: 16px 0; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; transition: all 0.15s; letter-spacing: -0.3px; }
+.primary-btn:active { transform: scale(0.97); }
+.secondary-btn { flex: 1; background: var(--bg2); border: 1px solid var(--border); color: var(--text); border-radius: 16px; padding: 16px 0; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.secondary-btn:active { transform: scale(0.97); }
+
+.page-header { padding: 24px 20px 16px; }
+.page-title { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; }
+.page-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+.history-card { margin: 0 16px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 16px 18px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all 0.15s; }
+.history-card:active { transform: scale(0.98); border-color: var(--border2); }
+.h-emoji-wrap { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.h-info { flex: 1; min-width: 0; }
+.h-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.h-verdict { font-size: 12px; font-weight: 700; white-space: nowrap; }
+.empty-state { text-align: center; color: var(--text2); padding: 80px 32px; font-size: 15px; line-height: 1.7; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+
+.cat-section-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1.2px; text-transform: uppercase; padding: 20px 20px 8px; }
+.cat-row { display: flex; align-items: center; gap: 14px; padding: 13px 20px; cursor: pointer; transition: background 0.1s; position: relative; }
+.cat-row:active { background: var(--bg2); }
+.cat-row.selected { background: rgba(99,102,241,0.08); }
+.cat-row.selected::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); border-radius: 2px 0 0 2px; }
+.cat-icon-wrap { width: 36px; height: 36px; border-radius: 10px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.cat-row.selected .cat-icon-wrap { background: rgba(99,102,241,0.15); }
+.cat-name { font-size: 15px; font-weight: 600; }
+.cat-row.selected .cat-name { color: var(--accent2); font-weight: 700; }
+.cat-check { margin-left: auto; color: var(--accent); font-size: 16px; opacity: 0; }
+.cat-row.selected .cat-check { opacity: 1; }
+
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; backdrop-filter: blur(4px); }
+.overlay.open { display: block; }
+.sidebar { position: fixed; top: 0; left: -310px; width: 310px; height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); z-index: 101; transition: left 0.28s cubic-bezier(0.4,0,0.2,1); overflow-y: auto; padding-bottom: 60px; }
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar.open { left: 0; }
+.sidebar-hdr { padding: 20px 18px 16px; padding-top: calc(20px + env(safe-area-inset-top, 0px)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg2); z-index: 5; }
+.sidebar-title { font-size: 17px; font-weight: 800; }
+.close-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; line-height: 1; }
+
+@keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadein 0.35s ease forwards; }
+
+.clear-btn { background: none; border: 1px solid var(--border); color: var(--text2); border-radius: 10px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.clear-btn:active { transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -124,11 +211,28 @@ input::placeholder{color:#2A2A42}
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <div class="sidebar" id="sidebar">
   <div class="sidebar-hdr">
-    <span class="sidebar-title">🔍 Categories</span>
-    <button class="closebtn" onclick="closeSidebar()">×</button>
+    <span class="sidebar-title">Categories</span>
+    <button class="close-btn" onclick="closeSidebar()">&#x2715;</button>
   </div>
   <div id="cat-list"></div>
 </div>
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn" id="tab-home" onclick="switchTab('home')">
+    <span class="tab-icon">&#8962;</span>
+    <span class="tab-label">Check</span>
+    <span class="tab-dot"></span>
+  </button>
+  <button class="tab-btn" id="tab-history" onclick="switchTab('history')">
+    <span class="tab-icon">&#9707;</span>
+    <span class="tab-label">History</span>
+    <span class="tab-dot"></span>
+  </button>
+  <button class="tab-btn" id="tab-categories" onclick="switchTab('categories')">
+    <span class="tab-icon">&#9776;</span>
+    <span class="tab-label">Categories</span>
+    <span class="tab-dot"></span>
+  </button>
+</nav>
 <script>
 const SERVER="https://gooddeal-server-production.up.railway.app";
 
@@ -192,106 +296,63 @@ const CATEGORIES=[
 ];
 
 const STORE_URLS={
-  "amazon":"https://www.amazon.com/s?k=",
-  "ebay":"https://www.ebay.com/sch/i.html?_nkw=",
-  "walmart":"https://www.walmart.com/search?q=",
-  "target":"https://www.target.com/s?searchTerm=",
-  "best buy":"https://www.bestbuy.com/site/searchpage.jsp?st=",
-  "bestbuy":"https://www.bestbuy.com/site/searchpage.jsp?st=",
-  "costco":"https://www.costco.com/CatalogSearch?keyword=",
-  "poshmark":"https://poshmark.com/search?query=",
-  "stockx":"https://stockx.com/search?s=",
-  "goat":"https://www.goat.com/search?query=",
-  "nike":"https://www.nike.com/search?q=",
-  "adidas":"https://www.adidas.com/us/search?q=",
-  "foot locker":"https://www.footlocker.com/search?query=",
-  "footlocker":"https://www.footlocker.com/search?query=",
-  "nordstrom":"https://www.nordstrom.com/sr?keyword=",
-  "macys":"https://www.macys.com/shop/search?keyword=",
-  "macy":"https://www.macys.com/shop/search?keyword=",
-  "asos":"https://www.asos.com/us/search/?q=",
-  "etsy":"https://www.etsy.com/search?q=",
-  "zales":"https://www.zales.com/search?q=",
-  "kay":"https://www.kay.com/search?q=",
-  "sephora":"https://www.sephora.com/search?keyword=",
-  "ulta":"https://www.ulta.com/search?search=",
-  "wayfair":"https://www.wayfair.com/keyword.php?keyword=",
-  "home depot":"https://www.homedepot.com/s/",
-  "homedepot":"https://www.homedepot.com/s/",
-  "lowe":"https://www.lowes.com/search?searchTerm=",
-  "ikea":"https://www.ikea.com/us/en/search/?q=",
-  "gamestop":"https://www.gamestop.com/search/?q=",
-  "newegg":"https://www.newegg.com/p/pl?d=",
-  "dick":"https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=",
-  "chewy":"https://www.chewy.com/s?query=",
-  "petsmart":"https://www.petsmart.com/search?q=",
-  "petco":"https://www.petco.com/shop/en/petcostore/search?q=",
-  "rei":"https://www.rei.com/search?q=",
-  "total wine":"https://www.totalwine.com/search/all?text=",
-  "guitar center":"https://www.guitarcenter.com/search?N=4294967131&Ntt=",
-  "gnc":"https://www.gnc.com/search?q=",
-  "cvs":"https://www.cvs.com/search/?searchTerm=",
-  "walgreen":"https://www.walgreens.com/search/results.jsp?Ntt=",
-  "staples":"https://www.staples.com/search?query=",
-  "autozone":"https://www.autozone.com/searchresult?searchtext=",
-  "lids":"https://www.lids.com/search?q=",
-  "coach":"https://www.coach.com/search?q=",
-  "lululemon":"https://shop.lululemon.com/search?Ntt=",
-  "sunglass hut":"https://www.sunglasshut.com/us/search?q=",
-  "barnes":"https://www.barnesandnoble.com/s/",
-  "gap":"https://www.gap.com/browse/search.do?searchText=",
-  "zara":"https://www.zara.com/us/en/search?searchTerm=",
+  "amazon":"https://www.amazon.com/s?k=","ebay":"https://www.ebay.com/sch/i.html?_nkw=","walmart":"https://www.walmart.com/search?q=","target":"https://www.target.com/s?searchTerm=","best buy":"https://www.bestbuy.com/site/searchpage.jsp?st=","bestbuy":"https://www.bestbuy.com/site/searchpage.jsp?st=","costco":"https://www.costco.com/CatalogSearch?keyword=","poshmark":"https://poshmark.com/search?query=","stockx":"https://stockx.com/search?s=","goat":"https://www.goat.com/search?query=","nike":"https://www.nike.com/search?q=","adidas":"https://www.adidas.com/us/search?q=","foot locker":"https://www.footlocker.com/search?query=","footlocker":"https://www.footlocker.com/search?query=","nordstrom":"https://www.nordstrom.com/sr?keyword=","macys":"https://www.macys.com/shop/search?keyword=","macy":"https://www.macys.com/shop/search?keyword=","asos":"https://www.asos.com/us/search/?q=","etsy":"https://www.etsy.com/search?q=","zales":"https://www.zales.com/search?q=","kay":"https://www.kay.com/search?q=","sephora":"https://www.sephora.com/search?keyword=","ulta":"https://www.ulta.com/search?search=","wayfair":"https://www.wayfair.com/keyword.php?keyword=","home depot":"https://www.homedepot.com/s/","homedepot":"https://www.homedepot.com/s/","lowe":"https://www.lowes.com/search?searchTerm=","ikea":"https://www.ikea.com/us/en/search/?q=","gamestop":"https://www.gamestop.com/search/?q=","newegg":"https://www.newegg.com/p/pl?d=","dick":"https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=","chewy":"https://www.chewy.com/s?query=","petsmart":"https://www.petsmart.com/search?q=","petco":"https://www.petco.com/shop/en/petcostore/search?q=","rei":"https://www.rei.com/search?q=","total wine":"https://www.totalwine.com/search/all?text=","guitar center":"https://www.guitarcenter.com/search?N=4294967131&Ntt=","gnc":"https://www.gnc.com/search?q=","cvs":"https://www.cvs.com/search/?searchTerm=","walgreen":"https://www.walgreens.com/search/results.jsp?Ntt=","staples":"https://www.staples.com/search?query=","autozone":"https://www.autozone.com/searchresult?searchtext=","lids":"https://www.lids.com/search?q=","coach":"https://www.coach.com/search?q=","lululemon":"https://shop.lululemon.com/search?Ntt=","sunglass hut":"https://www.sunglasshut.com/us/search?q=","barnes":"https://www.barnesandnoble.com/s/","gap":"https://www.gap.com/browse/search.do?searchText=","zara":"https://www.zara.com/us/en/search?searchTerm=",
 };
 
-function getStoreUrl(source,item){
-  const s=source.toLowerCase();
-  const match=Object.keys(STORE_URLS).find(k=>s.includes(k));
-  return(match?STORE_URLS[match]:"https://www.amazon.com/s?k=")+encodeURIComponent(item);
-}
+function getStoreUrl(source,item){const s=source.toLowerCase();const match=Object.keys(STORE_URLS).find(k=>s.includes(k));return(match?STORE_URLS[match]:"https://www.amazon.com/s?k=")+encodeURIComponent(item);}
 
 const RETAIL_PRICES={"jordan":150,"yeezy":220,"air force":110,"dunk":110,"louis vuitton":800,"gucci":500,"chanel":1000,"rolex":5000,"iphone":799,"airpods pro":189,"ps5":499};
-function checkScam(item,price){
-  const il=item.toLowerCase();const pN=parseFloat(String(price).replace(/[^0-9.]/g,""))||0;
-  for(const[k,r] of Object.entries(RETAIL_PRICES)){if(il.includes(k)&&pN>0&&pN<r*0.4)return`⚠️ Red flag: ${item} retails for ~$${r}. This price is suspiciously low — could be fake.`;}
-  return null;
-}
+function checkScam(item,price){const il=item.toLowerCase();const pN=parseFloat(String(price).replace(/[^0-9.]/g,""))||0;for(const[k,r] of Object.entries(RETAIL_PRICES)){if(il.includes(k)&&pN>0&&pN<r*0.4)return`Red flag: ${item} retails for ~$${r}. This price is suspiciously low — could be fake.`;}return null;}
 
 const VERDICT={
-  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"#021508",border:"#14532D"},
-  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"#031209",border:"#166534"},
-  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"#141000",border:"#854D0E"},
-  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"#130404",border:"#991B1B"},
+  great:{emoji:"🔥",label:"Great Deal",color:"#22C55E",bg:"rgba(34,197,94,0.08)",border:"rgba(34,197,94,0.2)"},
+  good:{emoji:"✅",label:"Good Deal",color:"#4ADE80",bg:"rgba(74,222,128,0.07)",border:"rgba(74,222,128,0.18)"},
+  okay:{emoji:"⚠️",label:"It's Okay",color:"#FACC15",bg:"rgba(250,204,21,0.07)",border:"rgba(250,204,21,0.2)"},
+  bad:{emoji:"❌",label:"You're Getting Played",color:"#F87171",bg:"rgba(248,113,113,0.07)",border:"rgba(248,113,113,0.2)"},
 };
+
+const AVATAR_COLORS=["#6366F1","#8B5CF6","#EC4899","#EF4444","#F97316","#EAB308","#22C55E","#14B8A6","#06B6D4","#3B82F6"];
+function storeAvatarColor(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))&0xFFFFFF;return AVATAR_COLORS[Math.abs(h)%AVATAR_COLORS.length];}
+function storeAvatar(name){const letter=(name||"?")[0].toUpperCase();const color=storeAvatarColor(name);return`<div class="store-avatar" style="background:${color}22;color:${color};border:1px solid ${color}33">${letter}</div>`;}
 
 function loadHistory(){try{return JSON.parse(localStorage.getItem("gd_history")||"[]")}catch{return[]}}
 function saveHistory(h){try{localStorage.setItem("gd_history",JSON.stringify(h.slice(0,20)))}catch{}}
 function loadCat(){try{return localStorage.getItem("gd_cat")||"all"}catch{return"all"}}
 function saveCat(id){try{localStorage.setItem("gd_cat",id)}catch{}}
 
-let state={screen:"home",item:"",price:"",store:"",size:"",loading:false,loadStep:"",result:null,history:loadHistory(),categoryId:loadCat()};
+let state={tab:"home",item:"",price:"",store:"",size:"",loading:false,loadStep:"",result:null,history:loadHistory(),categoryId:loadCat(),installBannerDismissed:!!localStorage.getItem("gd_nobanner"),_prevTab:"home"};
 
 const CATS=CATEGORIES.filter(c=>c.id);
-function getCat(){return CATS.find(c=>c.id===state.categoryId)||CATS[0]}
-function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad"}
-function pick(t,l){if(!t)return null;const m=t.match(new RegExp(l+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null}
-function setState(u){Object.assign(state,u);render()}
+function getCat(){return CATS.find(c=>c.id===state.categoryId)||CATS[0];}
+function scoreToVerdict(s){return s>=78?"great":s>=55?"good":s>=33?"okay":"bad";}
+function pick(t,l){if(!t)return null;const m=t.match(new RegExp(l+":\\s*([\\s\\S]+?)(?=\\n[A-Z _]+:|$)","i"));return m?m[1].trim():null;}
+function setState(u){Object.assign(state,u);render();}
 
-function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open")}
-function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open")}
-function selectCategory(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";saveCat(id);closeSidebar();render()}
+function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}
+function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+function selectCategory(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";saveCat(id);closeSidebar();render();}
+function switchTab(tab){if(tab===state.tab&&tab!=="home")return;setState({tab,result:tab==="home"&&state.tab!=="result"?null:state.result});}
+function dismissBanner(){state.installBannerDismissed=true;try{localStorage.setItem("gd_nobanner","1");}catch{}render();}
 
 function buildSidebar(){
   const list=document.getElementById("cat-list");if(!list)return;
   list.innerHTML=CATEGORIES.map(c=>c.section
     ?`<div class="cat-section-label">${c.section}</div>`
-    :`<div class="cat-item ${state.categoryId===c.id?"active":""}" onclick="selectCategory('${c.id}')"><span class="cat-icon">${c.icon}</span><span class="cat-name ${state.categoryId===c.id?"active":""}">${c.name}</span></div>`
+    :`<div class="cat-row ${state.categoryId===c.id?"selected":""}" onclick="selectCategory('${c.id}')"><div class="cat-icon-wrap">${c.icon}</div><span class="cat-name">${c.name}</span><span class="cat-check">&#x2713;</span></div>`
   ).join("");
+}
+
+function updateTabBar(){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  const activeTab=state.tab==="result"?"home":state.tab;
+  const btn=document.getElementById("tab-"+activeTab);
+  if(btn)btn.classList.add("active");
 }
 
 async function analyze(){
   if(!state.item||!state.price)return;
   const cat=getCat();
-  setState({loading:true,screen:"result",result:null,loadStep:"Searching live prices..."});
+  setState({loading:true,tab:"result",result:null,loadStep:"Searching live prices..."});
   let priceList=[],lowestPrice=null,lowestSource=null,priceDiff=null;
   try{
     const q=state.item+(state.size?` size ${state.size}`:"");
@@ -299,11 +360,7 @@ async function analyze(){
     const data=await res.json();
     if(Array.isArray(data)&&data.length>0){
       priceList=data.filter(r=>r.price).slice(0,8).map(r=>({price:r.price,source:r.source||"Unknown",link:r.link||null,priceNum:parseFloat(String(r.price).replace(/[^0-9.]/g,""))||999999})).sort((a,b)=>a.priceNum-b.priceNum);
-      if(priceList.length>0){
-        lowestPrice=priceList[0].price;lowestSource=priceList[0].source;
-        const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;
-        if(uN>priceList[0].priceNum)priceDiff=((uN-priceList[0].priceNum)/uN*100).toFixed(0);
-      }
+      if(priceList.length>0){lowestPrice=priceList[0].price;lowestSource=priceList[0].source;const uN=parseFloat(state.price.replace(/[^0-9.]/g,""))||0;if(uN>priceList[0].priceNum)priceDiff=((uN-priceList[0].priceNum)/uN*100).toFixed(0);}
     }
   }catch(e){}
   setState({loadStep:"Running AI analysis..."});
@@ -328,6 +385,11 @@ async function analyze(){
   }
 }
 
+function buildScoreRing(score,color){
+  const r=46,circ=2*Math.PI*r,dash=(score/100)*circ;
+  return`<div class="score-ring"><svg viewBox="0 0 110 110"><circle class="score-ring-track" cx="55" cy="55" r="${r}"/><circle class="score-ring-fill" cx="55" cy="55" r="${r}" stroke="${color}" stroke-dasharray="${dash} ${circ}" stroke-dashoffset="0"/></svg><div class="score-ring-center"><span class="score-num" style="color:${color}">${score}</span><span class="score-label">SCORE</span></div></div>`;
+}
+
 function renderResult(){
   const r=state.result;if(!r)return"";
   const v=r.verdictKey;const vd=VERDICT[v];const sc=r.score;const tx=r.text;
@@ -337,91 +399,166 @@ function renderResult(){
   const isWait=wob?.toLowerCase().startsWith("wait");
   const pl=r.priceList||[];const uN=parseFloat((r.price||"").replace(/[^0-9.]/g,""))||0;
   const cat=CATS.find(c=>c.id===r.categoryId)||CATS[0];
-  if(state.loading)return`<div class="lwrap"><div class="spin"></div><div class="litem">${r.item||state.item}</div><div class="lstep">${state.loadStep}</div></div>`;
-  // Deduplicate price list by source
+  if(state.loading){return`<div class="loading-screen"><div class="loading-logo">🔍</div><div class="loading-item">${r.item||state.item}</div><div class="loading-step">${state.loadStep}</div><div class="loading-dots"><span></span><span></span><span></span></div></div>`;}
   const seen=new Set();
   const deduped=pl.filter(p=>{const k=p.source.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
-  let priceRows="";
+  let priceTableHtml="";
   if(deduped.length>0){
-    const ur=`<div class="prow user"><div><div class="pstore user">📍 ${r.store||"Your Store"}</div><div class="psub red">Where you're standing</div></div><span class="price user">${r.price}</span></div>`;
+    const userRow=`<div class="price-row user-row">${storeAvatar(r.store||"You")}<div class="price-row-info"><div class="store-name" style="color:#F87171">${r.store||"Your Store"}</div><div class="store-sub red">Where you're standing</div></div><div class="price-row-right"><span class="row-price red">${r.price}</span></div></div>`;
     const rows=deduped.slice(0,7).map((p,i)=>{
-      const il=i===0;const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;
-      const isSus=uN>0&&p.priceNum<uN*0.3&&uN>50;
+      const isLowest=i===0;const sv=uN&&p.priceNum&&uN>p.priceNum?`Save $${(uN-p.priceNum).toFixed(0)}`:null;const isSus=uN>0&&p.priceNum<uN*0.3&&uN>50;
       const buyUrl=p.link||getStoreUrl(p.source,r.item+(r.size?` ${r.size}`:""));
-      return`<div class="prow ${il?"lowest":""}" onclick="window.open('${buyUrl}','_blank')"><div><div class="pstore">${il?"🏆 ":""}${p.source}</div>${il?'<div class="psub low">Cheapest found</div>':""}${isSus?'<div class="psub red">⚠️ Verify authenticity</div>':'<div class="psub link">Tap to buy →</div>'}</div><div class="pright">${isSus?'<span class="fakebadge">⚠️</span>':sv?`<span class="savebadge">${sv}</span>`:""}<span class="price ${il?"lowest":""}">${p.price}</span></div></div>`;
+      return`<div class="price-row ${isLowest?"lowest-row":""}" onclick="window.open('${buyUrl}','_blank')">${storeAvatar(p.source)}<div class="price-row-info"><div class="store-name">${isLowest?"🏆 ":""}${p.source}</div>${isLowest?'<div class="store-sub green">Cheapest found</div>':isSus?'<div class="store-sub red">Verify authenticity</div>':'<div class="store-sub accent">Tap to buy &#x2192;</div>'}</div><div class="price-row-right">${isSus?'<span class="warn-tag">Suspicious</span>':sv?`<span class="save-tag">${sv}</span>`:""}<span class="row-price ${isLowest?"green":""}">${p.price}</span></div></div>`;
     }).join("");
-    priceRows=`<div class="ptable fadecard"><div class="phdr"><span class="phdrt">${cat.icon} Live Prices</span><span class="live"><span class="livedot"></span>Live</span></div>${ur}${rows}</div>`;
+    priceTableHtml=`<div class="price-table fade-in"><div class="price-table-hdr"><span class="price-table-title">${cat.icon} Live Prices</span><span class="live-badge"><span class="live-dot"></span>Live</span></div>${userRow}${rows}</div>`;
   }
   return`
-    <div class="banner fadecard" style="background:${vd.bg};border:1px solid ${vd.border}">
-      <div class="scorerow" style="color:${vd.color}">${cat.icon} ${cat.name} · Score: ${sc}/100</div>
-      <span class="bige">${vd.emoji}</span>
-      <div class="vlabel" style="color:${vd.color}">${vd.label}</div>
-      <div class="vitem">${r.item}${r.size?` · ${r.size}`:""} · ${r.price}${r.store?` at ${r.store}`:""}</div>
-      <div class="barw"><div class="barf" style="--bar-w:${sc}%;background:${vd.color}"></div></div>
-      ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="savemsg">💰 Save ${r.priceDiff}% buying elsewhere</div>`:""}
-      ${r.scamWarn?`<div class="warn">${r.scamWarn}</div>`:""}
+    <div class="verdict-card fade-in" style="background:${vd.bg};border:1px solid ${vd.border}">
+      <div class="vc-cat" style="color:${vd.color}">${cat.icon} ${cat.name}</div>
+      <div class="score-ring-wrap">${buildScoreRing(sc,vd.color)}</div>
+      <div class="verdict-emoji">${vd.emoji}</div>
+      <div class="verdict-title" style="color:${vd.color}">${vd.label}</div>
+      <div class="verdict-meta">${r.item}${r.size?` · ${r.size}`:""}<br>${r.price}${r.store?` at ${r.store}`:""}</div>
+      ${r.priceDiff&&parseInt(r.priceDiff)>5?`<div class="verdict-save">Save ${r.priceDiff}% buying elsewhere</div>`:""}
+      ${r.scamWarn?`<div class="verdict-warn">&#x26A0;&#xFE0F; ${r.scamWarn}</div>`:""}
     </div>
-    ${oneLine?`<div class="sec fadecard"><div class="sect">The Verdict</div><p class="secp" style="font-style:italic;color:#C0C0E0;font-size:16px">"${oneLine}"</p></div>`:""}
-    ${priceRows}
-    ${auth?`<div class="sec fadecard" style="border-color:#854D0E"><div class="sect">🔍 Authenticity</div><p class="secp">${auth}</p></div>`:""}
-    ${hist?`<div class="sec fadecard"><div class="sect">📈 Price History</div><p class="secp">${hist}</p></div>`:""}
-    ${coupons?`<div class="sec fadecard" style="border-color:#1E3A5F"><div class="sect">🏷️ Coupon Tips</div><p class="secp">${coupons}</p></div>`:""}
-    ${alts?`<div class="sec fadecard" style="border-color:#2D1B4E"><div class="sect">💡 Alternatives</div><p class="secp">${alts}</p></div>`:""}
-    ${wob?`<div class="wob fadecard ${isWait?"wait":"buy"}"><span class="wobicon">${isWait?"⏳":"🛒"}</span><div><div class="wobtitle ${isWait?"wait":"buy"}">${isWait?"Wait":"Buy Now"}</div><div class="wobtext">${wob}</div></div></div>`:""}
-    ${bottom?`<div class="sec fadecard" style="border:1px solid ${vd.border}"><div class="sect">Bottom Line</div><p class="secp">${bottom}</p></div>`:""}
-    <div class="actrow fadecard"><button class="newbtn" onclick="doReset()">Check Another</button><button class="shrbtn" onclick="doShare()">📋 Share</button></div>`;
+    ${oneLine?`<div class="result-sec fade-in"><div class="result-sec-title">The Verdict</div><p class="one-line-quote">"${oneLine}"</p></div>`:""}
+    ${priceTableHtml}
+    ${auth?`<div class="result-sec fade-in" style="border-color:rgba(250,204,21,0.2)"><div class="result-sec-title">&#x1F50D; Authenticity</div><p class="result-sec-body">${auth}</p></div>`:""}
+    ${hist?`<div class="result-sec fade-in"><div class="result-sec-title">&#x1F4C8; Price History</div><p class="result-sec-body">${hist}</p></div>`:""}
+    ${coupons?`<div class="result-sec fade-in" style="border-color:rgba(99,102,241,0.25)"><div class="result-sec-title">&#x1F3F7;&#xFE0F; Coupon Tips</div><p class="result-sec-body">${coupons}</p></div>`:""}
+    ${alts?`<div class="result-sec fade-in" style="border-color:rgba(129,140,248,0.2)"><div class="result-sec-title">&#x1F4A1; Alternatives</div><p class="result-sec-body">${alts}</p></div>`:""}
+    ${wob?`<div class="wob-card fade-in ${isWait?"wait-card":"buy-card"}"><span class="wob-icon">${isWait?"⏳":"🛒"}</span><div><div class="wob-title">${isWait?"Wait":"Buy Now"}</div><div class="wob-text">${wob}</div></div></div>`:""}
+    ${bottom?`<div class="result-sec fade-in" style="border-color:${vd.border}"><div class="result-sec-title">Bottom Line</div><p class="result-sec-body">${bottom}</p></div>`:""}
+    <div class="action-row fade-in">
+      <button class="primary-btn" onclick="doReset()">Check Another</button>
+      <button class="secondary-btn" onclick="doShare()">Share &#x1F4CB;</button>
+    </div>
+    <div style="height:8px"></div>`;
 }
+
+function renderHome(){
+  const cat=getCat();
+  const needsSize=["sneakers","clothing","bags","kids_clothing"].includes(cat.id);
+  const recentItems=[...new Set(state.history.map(h=>h.item))].slice(0,5);
+  const acItems=state.item?recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item):[];
+  const acHtml=acItems.length>0?`<div class="ac-drop">${acItems.map(i=>`<div class="ac-item" onclick="fillItem('${i.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">&#x1F550; ${i}<span class="ac-sub">recent</span></div>`).join("")}</div>`:"";
+  const showBanner=!state.installBannerDismissed&&typeof navigator!=="undefined"&&navigator.standalone===false&&/iPhone|iPad/.test(navigator.userAgent);
+  return`
+    ${showBanner?`<div class="install-banner"><span class="install-icon">&#x1F4F2;</span><div class="install-text"><div class="install-title">Add to Home Screen</div><div class="install-sub">Tap Share then "Add to Home Screen"</div></div><button class="install-close" onclick="dismissBanner()">&#x2715;</button></div>`:""}
+    <div class="hero">
+      <div class="cat-pill">${cat.icon} ${cat.name}</div>
+      <h1>Is this a<br>good deal?</h1>
+      <p class="hero-sub">Live prices · Scam detection · AI verdict</p>
+    </div>
+    <div class="form-card">
+      <label class="field-label" style="margin-top:0">What is it?</label>
+      <div class="input-wrap">
+        <input type="text" id="ii" placeholder="${cat.examples[0]?.label||"Item name"}" value="${state.item.replace(/"/g,"&quot;")}" oninput="state.item=this.value;upd();renderAc()" autocomplete="off">
+        ${acHtml}
+      </div>
+      ${needsSize?`<label class="field-label">Size (optional)</label><input type="text" placeholder="${cat.id==="sneakers"?"e.g. 10.5 Men's":"e.g. Large / 32x30"}" value="${state.size.replace(/"/g,"&quot;")}" oninput="state.size=this.value">`:""}
+      <label class="field-label">Price you see</label>
+      <input class="price-input" type="text" id="ip" inputmode="decimal" placeholder="$99" value="${state.price.replace(/"/g,"&quot;")}" oninput="state.price=this.value;upd()">
+      <label class="field-label">Store (optional)</label>
+      <input type="text" placeholder="Where are you shopping?" value="${state.store.replace(/"/g,"&quot;")}" oninput="state.store=this.value">
+      <button id="gb" class="${state.item&&state.price?"check-btn on":"check-btn off"}" onclick="if(state.item&&state.price)analyze()">${state.item&&state.price?"Check the deal &#x2192;":"Enter item + price above"}</button>
+    </div>
+    ${cat.tips&&cat.tips.length>0?`<div class="chips-row">${cat.tips.map(t=>`<button class="chip" onclick="fillItem('${t.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}',true)">${t}</button>`).join("")}</div>`:""}
+    <div class="examples-section">
+      <div class="section-label">Quick Examples</div>
+      <div class="ex-grid">${cat.examples.map((ex,i)=>`<div class="ex-card" onclick="fillEx(${i})"><div class="ex-name">${ex.label}</div><div class="ex-meta">${ex.price} · ${ex.store}</div></div>`).join("")}</div>
+    </div>
+    <div style="height:8px"></div>`;
+}
+
+function renderHistory(){
+  const hc=state.history.length;
+  return`
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div><div class="page-title">History</div><div class="page-sub">${hc} item${hc!==1?"s":""} checked</div></div>
+      ${hc>0?`<button class="clear-btn" onclick="clearHistory()">Clear all</button>`:""}
+    </div>
+    ${hc===0?`<div class="empty-state"><span class="empty-icon">&#x1F6CD;&#xFE0F;</span>No checks yet.<br>Go find something to buy.</div>`:
+      state.history.map((h,i)=>{const hcat=CATS.find(c=>c.id===h.categoryId)||CATS[0];const vd=VERDICT[h.verdictKey];return`<div class="history-card" onclick="viewH(${i})"><div class="h-emoji-wrap" style="background:${vd.bg};border:1px solid ${vd.border}">${vd.emoji}</div><div class="h-info"><div class="h-name">${hcat.icon} ${h.item}</div><div class="h-meta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="h-verdict" style="color:${vd.color}">${vd.label}</div></div>`;}).join("")
+    }
+    <div style="height:8px"></div>`;
+}
+
+function renderCategories(){
+  return`
+    <div class="page-header"><div class="page-title">Categories</div><div class="page-sub">Pick your shopping category</div></div>
+    ${CATEGORIES.map(c=>c.section
+      ?`<div class="cat-section-label">${c.section}</div>`
+      :`<div class="cat-row ${state.categoryId===c.id?"selected":""}" onclick="selectCatPage('${c.id}')"><div class="cat-icon-wrap">${c.icon}</div><span class="cat-name">${c.name}</span><span class="cat-check">&#x2713;</span></div>`
+    ).join("")}
+    <div style="height:8px"></div>`;
+}
+
+function selectCatPage(id){state.categoryId=id;state.item="";state.price="";state.store="";state.size="";saveCat(id);setState({tab:"home"});}
 
 function render(){
-  const cat=getCat();const hc=state.history.length;
-  const hdrR=state.screen==="home"?`<button class="hbtn" onclick="setState({screen:'history'})">History${hc>0?` (${hc})`:""}</button>`:`<button class="hbtn" onclick="doReset()">← Back</button>`;
-  const needsSize=["sneakers","clothing","bags","kids_clothing"].includes(cat.id);
   let body="";
-  if(state.screen==="home"){
-    const recentItems=[...new Set(state.history.map(h=>h.item))].slice(0,5);
-    const acHtml=state.item&&recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item).length>0
-      ?`<div class="acdrop">${recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item).map(i=>`<div class="acitem" onclick="state.item='${i.replace(/'/g,"\\'")}';document.getElementById('ii').value='${i.replace(/'/g,"\\'")}';hideAc();upd()">🕐 ${i}<span class="acsub">recent</span></div>`).join("")}</div>`
-      :"";
-    body=`<div class="hero"><div class="cat-badge">${cat.icon} ${cat.name}</div><h1>Is this a<br>good deal?</h1><p class="sub">Live prices · Scam detection · AI verdict</p></div>
-    <div class="form">
-      <label class="lbl" style="margin-top:0">What is it?</label>
-      <div class="acwrap"><input type="text" id="ii" placeholder="e.g. ${cat.examples[0]?.label||"Item name"}" value="${state.item}" oninput="state.item=this.value;upd();render()" autocomplete="off">${acHtml}</div>
-      ${needsSize?`<label class="lbl">Size (optional)</label><input type="text" placeholder="${cat.id==="sneakers"?"e.g. 10.5 Men's":"e.g. Large / 32x30"}" value="${state.size}" oninput="state.size=this.value">`:""}
-      <label class="lbl">Price you see</label>
-      <input type="text" id="ip" inputmode="decimal" placeholder="$99" value="${state.price}" oninput="state.price=this.value;upd()">
-      <label class="lbl">Store (optional)</label>
-      <input type="text" placeholder="Where are you shopping?" value="${state.store}" oninput="state.store=this.value">
-      <button id="gb" class="${state.item&&state.price?"gobtn on":"gobtn off"}" onclick="if(state.item&&state.price)analyze()">${state.item&&state.price?"Check the deal →":"Enter item + price above"}</button>
+  if(state.tab==="result"){
+    body=state.loading
+      ?`<div class="loading-screen"><div class="loading-logo">&#x1F50D;</div><div class="loading-item">${state.item}</div><div class="loading-step">${state.loadStep}</div><div class="loading-dots"><span></span><span></span><span></span></div></div>`
+      :renderResult();
+  }else if(state.tab==="history"){body=renderHistory();}
+  else if(state.tab==="categories"){body=renderCategories();}
+  else{body=renderHome();}
+
+  const isResult=state.tab==="result";
+  const topbarRight=isResult?`<button class="topbar-action" onclick="doReset()">&#x2190; Back</button>`:"";
+  const showMenu=state.tab==="home"||state.tab==="categories"||state.tab==="result";
+
+  document.getElementById("app").innerHTML=`
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${showMenu?`<button class="menubtn" onclick="openSidebar()">&#9776;</button>`:""}
+        <div class="topbar-logo"><div class="logo-ring">&#x1F50D;</div>GoodDeal?</div>
+      </div>
+      ${topbarRight}
     </div>
-    ${cat.tips&&cat.tips.length>0?`<div class="tips">${cat.tips.map(t=>`<span class="tip" onclick="state.item='${t}';document.getElementById('ii').value='${t}';upd()">${t}</span>`).join("")}</div>`:""}
-    <div class="exwrap"><div class="exlbl">Quick Examples</div><div class="exgrid">${cat.examples.map((ex,i)=>`<div class="exchip" onclick="fillEx(${i})"><div class="exname">${ex.label}</div><div class="exmeta">${ex.price} · ${ex.store}</div></div>`).join("")}</div></div>`;
-  }else if(state.screen==="result"){
-    body=state.loading?`<div class="lwrap"><div class="spin"></div><div class="litem">${state.item}</div><div class="lstep">${state.loadStep}</div></div>`:renderResult();
-  }else if(state.screen==="history"){
-    body=`<div class="pagesec" style="display:flex;align-items:flex-start;justify-content:space-between"><div><div class="pagetitle">Recent Checks</div><div class="pagesub">${hc} items checked</div></div>${hc>0?`<button onclick="clearHistory()" style="background:none;border:1px solid #1C1C28;color:#52526E;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px">Clear</button>`:""}</div>`+(hc===0?`<div class="empty">No checks yet.<br>Go find something to buy.</div>`:state.history.map((h,i)=>{const hcat=CATS.find(c=>c.id===h.categoryId)||CATS[0];return`<div class="hcard" onclick="viewH(${i})"><span style="font-size:28px">${VERDICT[h.verdictKey].emoji}</span><div class="hinfo"><div class="hname">${hcat.icon} ${h.item}</div><div class="hmeta">${h.price}${h.store?` · ${h.store}`:""} · ${h.time}</div></div><div class="hverd" style="color:${VERDICT[h.verdictKey].color}">${VERDICT[h.verdictKey].label}</div></div>`;}).join(""));
-  }
-  document.getElementById("app").innerHTML=`<div class="hdr"><div class="hdr-left"><button class="menubtn" onclick="openSidebar()">☰</button><div class="logo"><span>🔍</span><span>GoodDeal?</span></div></div>${hdrR}</div><div class="body">${body}</div>`;
+    <div class="scroll-body">${body}</div>`;
+
+  updateTabBar();
   buildSidebar();
+  state._prevTab=state.tab;
 }
 
-function fillEx(i){const e=getCat().examples[i];state.item=e.label;state.price=e.price;state.store=e.store;render()}
-function doReset(){setState({screen:"home",result:null})}
-function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;state.size=h.size||"";state.categoryId=h.categoryId||"all";setState({screen:"result",result:h})}
-function upd(){const b=document.getElementById("gb");if(!b)return;const on=state.item&&state.price;b.className=on?"gobtn on":"gobtn off";b.textContent=on?"Check the deal →":"Enter item + price above"}
-function hideAc(){setTimeout(()=>{const d=document.querySelector(".acdrop");if(d)d.remove()},150)}
-function clearHistory(){state.history=[];saveHistory([]);render()}
+function renderAc(){
+  const recentItems=[...new Set(state.history.map(h=>h.item))].slice(0,5);
+  const acItems=state.item?recentItems.filter(i=>i.toLowerCase().includes(state.item.toLowerCase())&&i!==state.item):[];
+  const wrap=document.querySelector(".input-wrap");if(!wrap)return;
+  const old=wrap.querySelector(".ac-drop");if(old)old.remove();
+  if(!acItems.length)return;
+  const div=document.createElement("div");div.className="ac-drop";
+  div.innerHTML=acItems.map(i=>`<div class="ac-item" onclick="fillItem('${i.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">&#x1F550; ${i}<span class="ac-sub">recent</span></div>`).join("");
+  wrap.appendChild(div);
+}
+
+function fillItem(val,focusPrice=false){state.item=val;const ii=document.getElementById("ii");if(ii)ii.value=val;setTimeout(()=>{const ac=document.querySelector(".ac-drop");if(ac)ac.remove();},150);upd();if(focusPrice){const ip=document.getElementById("ip");if(ip)ip.focus();}}
+function fillEx(i){const e=getCat().examples[i];state.item=e.label;state.price=e.price;state.store=e.store;render();}
+function doReset(){setState({tab:"home",result:null});}
+function viewH(i){const h=state.history[i];state.item=h.item;state.price=h.price;state.store=h.store;state.size=h.size||"";state.categoryId=h.categoryId||"all";setState({tab:"result",result:h});}
+function upd(){const b=document.getElementById("gb");if(!b)return;const on=state.item&&state.price;b.className=on?"check-btn on":"check-btn off";b.textContent=on?"Check the deal →":"Enter item + price above";}
+function clearHistory(){state.history=[];saveHistory([]);render();}
 function doShare(){
   const r=state.result;if(!r)return;
-  const vd=VERDICT[r.verdictKey];
-  const ol=pick(r.text,"ONE LINE");
+  const vd=VERDICT[r.verdictKey];const ol=pick(r.text,"ONE LINE");
   const ch=r.priceList?.[0]?`\nCheapest: ${r.priceList[0].source} at ${r.priceList[0].price}`:"";
   const coupons=pick(r.text,"COUPON TIPS");
   const t=`${vd.emoji} ${r.item} for ${r.price} — ${vd.label} (${r.score}/100)${ch}${ol?`\n\n"${ol}"`:""}${coupons?`\n\nCoupon tip: ${coupons.split(".")[0]}.`:""}\n\nChecked with GoodDeal?`;
-  if(navigator.share){navigator.share({text:t}).catch(()=>{})}
+  if(navigator.share){navigator.share({text:t}).catch(()=>{});}
   else navigator.clipboard?.writeText(t).then(()=>alert("Copied to clipboard!")).catch(()=>alert(t));
 }
+
 render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>

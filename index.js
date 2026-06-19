@@ -1,8 +1,10 @@
 const express = require("express");
 const fetch = require("node-fetch");
+const path = require("path");
 const app = express();
 
 app.use(express.json({ limit: "10kb" }));
+app.use(express.static(path.join(__dirname)));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -29,7 +31,12 @@ function setCache(key, data) {
 }
 
 app.get("/", (req, res) => {
-  res.json({ status: "GoodDeal server is running", serp: !!SERP_KEY, claude: !!CLAUDE_KEY });
+  const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
+  if (acceptsHtml) {
+    res.sendFile(path.join(__dirname, "index.html"));
+  } else {
+    res.json({ status: "GoodDeal server is running", serp: !!SERP_KEY, claude: !!CLAUDE_KEY });
+  }
 });
 
 app.get("/prices", async (req, res) => {

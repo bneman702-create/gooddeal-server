@@ -1,0 +1,14 @@
+{
+  "name": "GoodDeal?",
+  "short_name": "GoodDeal",
+  "description": "Is this a good deal? AI-powered price checker.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080B",
+  "theme_color": "#6366F1",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
