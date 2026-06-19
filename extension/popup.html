@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GoodDeal?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:360px;min-height:200px;background:#08080B;color:#F0F0F6;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;font-size:14px}
+.hdr{padding:14px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1C1C28}
+.logo{font-size:20px}
+.logo-text{font-size:16px;font-weight:900;letter-spacing:-0.5px}
+.logo-sub{font-size:11px;color:#52526E;margin-left:auto}
+.body{padding:14px 16px}
+
+/* Manual input */
+.input-group{margin-bottom:10px}
+.lbl{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;display:block}
+input{width:100%;background:#0F0F15;border:1px solid #1C1C28;border-radius:8px;padding:10px 12px;color:#F0F0F6;font-size:14px;font-family:inherit;outline:none}
+input:focus{border-color:#6366F1}
+input::placeholder{color:#2A2A42}
+.checkbtn{width:100%;background:#6366F1;border:none;color:#fff;border-radius:10px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;transition:opacity 0.15s}
+.checkbtn:hover{opacity:0.9}
+.checkbtn:disabled{background:#1C1C28;color:#52526E;cursor:default}
+
+/* Auto-detected banner */
+.detected{background:#0F0F15;border:1px solid #1C1C28;border-radius:10px;padding:12px;margin-bottom:12px}
+.det-label{font-size:10px;font-weight:700;color:#6366F1;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.det-title{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:4px;color:#E0E0F0}
+.det-price{font-size:18px;font-weight:900;color:#F0F0F6}
+.det-store{font-size:11px;color:#52526E;margin-top:2px}
+
+/* Loading */
+.loading{text-align:center;padding:24px 0}
+.spin{width:32px;height:32px;border:3px solid #1C1C28;border-top:3px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-size:13px;color:#52526E}
+
+/* Result */
+.verdict-banner{border-radius:12px;padding:16px;text-align:center;margin-bottom:10px}
+.verdict-emoji{font-size:36px;display:block;margin-bottom:6px}
+.verdict-label{font-size:18px;font-weight:900;margin-bottom:2px}
+.verdict-score{font-size:12px;opacity:0.7}
+.verdict-line{font-size:13px;font-style:italic;color:#C0C0E0;margin-top:8px;line-height:1.4}
+
+.prices-section{margin-bottom:10px}
+.prices-title{font-size:10px;font-weight:700;color:#52526E;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0F0F15;border:1px solid #1C1C28;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;color:inherit}
+.price-row:hover{border-color:#6366F1}
+.price-row.lowest{background:#021508;border-color:#14532D}
+.price-row.current{background:#1A0808;border-color:#991B1B;cursor:default}
+.store-name{font-size:13px;font-weight:600}
+.store-badge{font-size:10px;margin-top:1px;color:#52526E}
+.store-badge.low{color:#22C55E}
+.store-badge.cur{color:#F87171}
+.price-val{font-size:14px;font-weight:800}
+.price-val.low{color:#22C55E}
+.price-val.cur{color:#F87171}
+.save-badge{background:#14532D;color:#22C55E;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:6px}
+
+.buy-btn{width:100%;background:#22C55E;border:none;color:#fff;border-radius:10px;padding:11px;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;transition:opacity 0.15s}
+.buy-btn:hover{opacity:0.9}
+.tip{background:#0F0F15;border:1px solid #1E3A5F;border-radius:8px;padding:10px;margin-top:8px;font-size:12px;line-height:1.5;color:#C0C0E0}
+.tip-label{font-size:10px;font-weight:700;color:#6366F1;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+
+.open-app{display:block;text-align:center;color:#52526E;font-size:11px;padding:10px 0 4px;cursor:pointer;text-decoration:none}
+.open-app:hover{color:#6366F1}
+
+.scam{background:#130404;border:1px solid #991B1B;border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:#F87171;line-height:1.4}
+
+.divider{display:flex;align-items:center;gap:8px;margin:12px 0}
+.divider-line{flex:1;height:1px;background:#1C1C28}
+.divider-text{font-size:11px;color:#52526E}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <span class="logo">🔍</span>
+  <span class="logo-text">GoodDeal?</span>
+  <span class="logo-sub">AI Price Checker</span>
+</div>
+<div class="body" id="body">
+  <div class="loading"><div class="spin"></div><div class="load-text">Detecting product...</div></div>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
