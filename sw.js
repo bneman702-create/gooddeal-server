@@ -1,4 +1,4 @@
-const CACHE = 'gooddeal-v1';
+const CACHE = 'gooddeal-v3';
 const ASSETS = ['/', '/manifest.json'];
 
 self.addEventListener('install', e => {
