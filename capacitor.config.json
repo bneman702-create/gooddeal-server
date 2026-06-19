@@ -1,0 +1,30 @@
+{
+  "appId": "com.gooddeal.app",
+  "appName": "GoodDeal?",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "allowNavigation": [
+      "gooddeal-server-production.up.railway.app"
+    ]
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#08080B",
+    "scheme": "GoodDeal"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#08080B",
+      "iosSpinnerStyle": "small",
+      "spinnerColor": "#6366F1",
+      "showSpinner": true
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#08080B"
+    }
+  }
+}
